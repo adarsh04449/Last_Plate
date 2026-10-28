@@ -33,6 +33,10 @@ Changes made during development:
 12. Added a chopping station on the left. Every ticket marks one non-cheese ingredient as CHOP;
     after catching it, the player must reach the board and press C before the plate can become
     READY. Chopped food changes color and size, has its own sound, and is tracked per plate slot.
+13. Replaced the crowded single-screen rush with a multi-page cooking flow. Customer Order,
+    Collection, Preparation, Cooking, Serving, and Rating now have separate backgrounds and
+    controls. The global 60-second timer, lives, simultaneous hazards, and same-screen stations
+    were removed. A session now contains three untimed customer orders scored on quality.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

@@ -1,32 +1,34 @@
 # Last Plate
 
-An original 60-second Unity 6 kitchen-rush arcade game. Catch recipe ingredients in sequence,
-manage limited plate-tilt energy, build score multipliers, and survive escalating kitchen chaos.
+Last Plate is a multi-stage 2D cooking game made with Unity 6. One customer order moves through
+separate collection, preparation, cooking, plating, and rating pages. There is no global timer;
+the goal is to make each meal accurately and earn up to three stars.
 
 ## Run it
 
-1. Open this folder in Unity Hub with the Unity 6 2D template/version.
+1. Open this folder in Unity Hub using Unity 6.
 2. Open `Assets/Scenes/Game.unity`.
 3. Press Play.
+4. Press Enter on the title screen.
 
-The scene builds its illustrated kitchen, chef, ingredients, gameplay systems, and UI at runtime.
+The scene creates all gameplay pages and systems at runtime, so no Inspector setup is required.
 
 ## Controls
 
-- A/D or Left/Right: move
-- Tap/Hold Space: discard the newest plate item, then keep the plate tilted to avoid catches
-- C: chop the marked ingredient at the board on the left
-- E: serve a completed order at the window on the right
-- Enter: start/restart
+- Enter: start, accept an order, serve, or continue
+- A/D or Left/Right: move the collection basket
+- Space: chop or stop cooking
 - Escape: pause/resume
 
-The plate visibly carries up to three ingredients. Extra weight slows the chef, and wrong food
-can be recovered from by tilting instead of immediately losing a life. Tilting consumes energy
-and recharges when released. One clear customer ticket is active at a time; later difficulty phases
-change the customer type and pressure rather than adding simultaneous orders. Each ticket marks
-one ingredient that must be chopped at the left board. When all three correct ingredients are
-prepared, carry the plate to the serving window on the right and press E.
-Golden ingredients award bonus points.
-The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
+## Game flow
 
-See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.
+```text
+Customer Order → Collect Ingredients → Chop → Cook/Mix → Serve → Star Rating
+```
+
+A session contains three recipes: Garden Salad, Mushroom Melt, and Veggie Skillet. Wrong
+collection catches reduce quality rather than taking a life. Chopping and cooking use timing
+meters, and the final rating explains the quality earned in every stage.
+
+See `PLAN.md` for the current design and `DESIGN_CHANGES.txt` for differences from the original
+one-page proposal.
