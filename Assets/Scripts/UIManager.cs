@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
     public Text[] customerTexts;
     public Image[] patienceFills;
     public Image[] customerCardImages;
+    public Image[] customerPortraits;
+    public Sprite[] customerSprites;
     public GameObject titlePanel, pausePanel, resultsPanel, hud;
 
     private float damageFlashStrength;
@@ -53,6 +55,12 @@ public class UIManager : MonoBehaviour
             bool active = ticket != null;
             customerTexts[customerIndex].transform.parent.gameObject.SetActive(active);
             if (!active) continue;
+            if (customerPortraits != null && customerIndex < customerPortraits.Length &&
+                customerSprites != null && (int)ticket.type < customerSprites.Length)
+            {
+                customerPortraits[customerIndex].sprite = customerSprites[(int)ticket.type];
+                customerPortraits[customerIndex].preserveAspect = true;
+            }
             customerTexts[customerIndex].text = ticket.displayName.ToUpper() + "\n" +
                 ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
             patienceFills[customerIndex].fillAmount = ticket.patience / ticket.maxPatience;

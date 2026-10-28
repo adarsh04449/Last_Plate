@@ -28,16 +28,24 @@ public class GameBootstrapper : MonoBehaviour
         manager.AddComponent<AudioManager>();
 
         Texture2D sheet = Resources.Load<Texture2D>("Art/character_ingredient_sheet");
-        Sprite chefSprite = Slice(sheet, 0, 1);
+        Sprite fallbackChef = Slice(sheet, 0, 1);
+        Texture2D chefReactionSheet = Resources.Load<Texture2D>("Art/chef_reactions");
+        Sprite[] chefSprites = SliceHorizontal(chefReactionSheet, 3, 300f);
+        Sprite chefSprite = chefSprites[0] == null ? fallbackChef : chefSprites[0];
         Sprite[] foods = { Slice(sheet, 1, 1), Slice(sheet, 2, 1), Slice(sheet, 0, 0), Slice(sheet, 1, 0) };
         Sprite burnt = Slice(sheet, 2, 0);
 
-        GameObject chef = CreateSpriteObject("Chef", chefSprite, new Vector3(0f, -3.45f, 0f), new Vector3(1.45f, 1.45f, 1f), null, 3);
+        GameObject chef = CreateSpriteObject("Chef", chefSprite, new Vector3(0f, -3.45f, 0f), new Vector3(1.18f, 1.18f, 1f), null, 3);
         chef.AddComponent<ChefController>();
+        ChefReactionController reactions = chef.AddComponent<ChefReactionController>();
+        reactions.readySprite = chefSprite;
+        reactions.worriedSprite = chefSprites[1] == null ? chefSprite : chefSprites[1];
+        reactions.celebrationSprite = chefSprites[2] == null ? chefSprite : chefSprites[2];
 
         Sprite flatPlate = MakeRoundedPlate(false);
         Sprite tiltedPlate = MakeRoundedPlate(true);
-        GameObject plate = CreateSpriteObject("CatchPlate", flatPlate, new Vector3(0.45f, -2.55f, -0.1f), new Vector3(1.25f, 0.7f, 1f), chef.transform, 4);
+        // Compensate for the chef sprite scale so the gameplay catch area stays unchanged.
+        GameObject plate = CreateSpriteObject("CatchPlate", flatPlate, new Vector3(0.45f, -2.55f, -0.1f), new Vector3(1.54f, 0.86f, 1f), chef.transform, 4);
         BoxCollider2D plateCollider = plate.AddComponent<BoxCollider2D>(); plateCollider.isTrigger = true; plateCollider.size = new Vector2(1.8f, 1.3f);
         Rigidbody2D plateBody = plate.AddComponent<Rigidbody2D>(); plateBody.bodyType = RigidbodyType2D.Kinematic; plateBody.gravityScale = 0f;
         PlateController plateController = plate.AddComponent<PlateController>(); plateController.flatSprite = flatPlate; plateController.tiltedSprite = tiltedPlate;
@@ -66,6 +74,16 @@ public class GameBootstrapper : MonoBehaviour
         return Sprite.Create(sheet, new Rect(column * width, row * height, width, height), new Vector2(0.5f, 0.5f), 255f);
     }
 
+    private static Sprite[] SliceHorizontal(Texture2D sheet, int count, float pixelsPerUnit)
+    {
+        Sprite[] sprites = new Sprite[count];
+        if (sheet == null) return sprites;
+        float width = sheet.width / (float)count;
+        for (int i = 0; i < count; i++)
+            sprites[i] = Sprite.Create(sheet, new Rect(i * width, 0f, width, sheet.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+        return sprites;
+    }
+
     private void CreateUI(GameObject parent, Sprite[] foodSprites)
     {
         GameObject canvasObject = new GameObject("Canvas"); canvasObject.transform.SetParent(parent.transform);
@@ -83,12 +101,15 @@ public class GameBootstrapper : MonoBehaviour
         Text[] customerTexts = new Text[3];
         Image[] patienceFills = new Image[3];
         Image[] customerCardImages = new Image[3];
+        Image[] customerPortraits = new Image[3];
+        Sprite[] customerSprites = SliceHorizontal(Resources.Load<Texture2D>("Art/customer_portraits"), 3, 300f);
         for (int i = 0; i < 3; i++)
         {
             float cardX = i == 0 ? 0f : (i == 1 ? 390f : -390f);
             GameObject card = MakePanel("CustomerTicket" + (i + 1), hud.transform, new Color(0.96f, 0.9f, 0.75f, 0.92f), new Vector2(cardX, 200f), new Vector2(350f, 120f));
             customerCardImages[i] = card.GetComponent<Image>();
-            customerTexts[i] = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(0f, 9f), new Vector2(330f, 88f), 17, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
+            customerPortraits[i] = MakeSpriteImage("CustomerPortrait", card.transform, customerSprites[0], new Vector2(-128f, 5f), new Vector2(78f, 86f));
+            customerTexts[i] = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(37f, 9f), new Vector2(245f, 88f), 16, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
             GameObject patienceBack = MakePanel("PatienceBack", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.8f), new Vector2(0f, -49f), new Vector2(306f, 10f));
             GameObject patience = MakePanel("PatienceFill", patienceBack.transform, new Color(0.25f, 0.85f, 0.35f), Vector2.zero, new Vector2(300f, 6f));
             patienceFills[i] = patience.GetComponent<Image>(); patienceFills[i].type = Image.Type.Filled; patienceFills[i].fillMethod = Image.FillMethod.Horizontal;
@@ -134,6 +155,7 @@ public class GameBootstrapper : MonoBehaviour
         ui.orderIcons = orderIcons; ui.orderFrames = orderFrames; ui.plateIcons = plateIcons; ui.plateFrames = plateFrames; ui.ingredientSprites = foodSprites;
         ui.damageFlash = damageFlash; ui.successFlash = successFlash;
         ui.customerTexts = customerTexts; ui.patienceFills = patienceFills; ui.customerCardImages = customerCardImages;
+        ui.customerPortraits = customerPortraits; ui.customerSprites = customerSprites;
         ui.titlePanel = titlePanel; ui.pausePanel = pausePanel; ui.resultsPanel = resultsPanel; ui.hud = hud;
     }
 

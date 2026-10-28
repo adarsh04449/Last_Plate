@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         Lives = startingLives;
         Score = CompletedOrders = Combo = BestCombo = 0;
         Difficulty = DifficultyLevel.Preparation;
+        FindAnyObjectByType<ChefReactionController>()?.ResetPose();
         orderManager.CreateNewOrder();
         spawnManager.ResetSpawner();
         uiManager.ShowPlaying();
@@ -98,6 +99,7 @@ public class GameManager : MonoBehaviour
         int points = (100 + customerBonus) * Multiplier;
         Score += points;
         uiManager.ShowOrderComplete(points);
+        FindAnyObjectByType<ChefReactionController>()?.ShowCelebration();
         FindAnyObjectByType<AudioManager>().PlayOrderComplete();
     }
 
@@ -113,6 +115,7 @@ public class GameManager : MonoBehaviour
         Combo = 0;
         Lives = Mathf.Max(0, Lives - 1);
         uiManager.ShowDamageFlash();
+        FindAnyObjectByType<ChefReactionController>()?.ShowWorried();
         uiManager.ShowCatchFeedback(feedback, false);
         uiManager.Refresh();
         if (Lives == 0) EndRound();

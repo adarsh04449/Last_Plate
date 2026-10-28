@@ -121,6 +121,10 @@ Objective: make the game feel finished in the final recording.
 Acceptance test: every important player action has readable visual and audio feedback without sound
 effects becoming repetitive or overwhelming.
 
+Current progress: customer portraits, chef ready/worried/celebration poses, distinct action sounds,
+and the spoken reactions “Oh no!”, “Nice catch!”, and “Order up!” are implemented. The voice system
+uses cooldowns and allows damage reactions to interrupt celebratory speech.
+
 ### Phase 6 — Replayability and Submission Polish
 
 Objective: make the game easy to grade and easy to replay.

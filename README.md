@@ -25,6 +25,9 @@ active at a time; later difficulty phases change the customer type and pressure 
 simultaneous orders. Golden ingredients award bonus points.
 The HUD uses large recipe icons to highlight the next required ingredient and shows plate slots
 as correct, wrong, or golden. Damage and completed orders have separate visual flashes and sounds.
+Customer types now have distinct cartoon portraits, and the chef visibly reacts to burnt food and
+completed orders. Short spoken reactions ("Oh no!", "Nice catch!", and "Order up!") are used only
+for important moments, with cooldowns that prevent voice lines from becoming repetitive.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.
