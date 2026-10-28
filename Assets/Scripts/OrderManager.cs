@@ -14,7 +14,7 @@ public sealed class CustomerTicket
     public int rewardBonus;
 }
 
-/// <summary>Owns the customer queue and validates the plate against the selected ticket.</summary>
+/// <summary>Owns the single active customer ticket and validates the plate against it.</summary>
 public class OrderManager : MonoBehaviour
 {
     public int Progress { get; private set; }
@@ -39,10 +39,9 @@ public class OrderManager : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;
-        EnsureCustomerCount(DesiredCustomerCount());
-        if (Input.GetKeyDown(KeyCode.Alpha1)) SelectCustomer(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) SelectCustomer(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) SelectCustomer(2);
+        // Only one ticket is active at a time, keeping the action readable while
+        // preparation stations are added in the next milestone.
+        EnsureCustomerCount(1);
 
         for (int i = customers.Count - 1; i >= 0; i--)
         {
@@ -96,15 +95,6 @@ public class OrderManager : MonoBehaviour
         FindAnyObjectByType<UIManager>()?.Refresh();
     }
 
-    private void SelectCustomer(int index)
-    {
-        if (index < 0 || index >= customers.Count || index == SelectedIndex) return;
-        SelectedIndex = index;
-        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
-        SyncPlate(inventory == null ? new IngredientType[0] : inventory.CurrentTypes);
-        FindAnyObjectByType<UIManager>().ShowCatchFeedback("TARGET: " + customers[index].displayName.ToUpper(), false);
-    }
-
     private void EnsureCustomerCount(int target)
     {
         while (customers.Count < target) customers.Add(BuildCustomer());
@@ -151,10 +141,4 @@ public class OrderManager : MonoBehaviour
         }
     }
 
-    private int DesiredCustomerCount()
-    {
-        if (GameManager.Instance.Difficulty == DifficultyLevel.Preparation) return 1;
-        if (GameManager.Instance.Difficulty == DifficultyLevel.DinnerRush) return 2;
-        return 3;
-    }
 }

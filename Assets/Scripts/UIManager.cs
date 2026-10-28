@@ -58,7 +58,7 @@ public class UIManager : MonoBehaviour
         hud.SetActive(false);
         messageText.color = Color.white;
         messageText.fontSize = 42;
-        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch each recipe in order\n1 / 2 / 3 selects a customer\nHold SPACE to discard and tilt\nGolden food scores bonus points\n\nA / D or ARROWS to move\nENTER to start";
+        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nComplete the order before the customer leaves\nHold SPACE to discard and tilt\nGolden food scores bonus points\n\nA / D or ARROWS to move\nENTER to start";
     }
 
     public void ShowPlaying() { SetPanels(null); hud.SetActive(true); ClearMessage(); }

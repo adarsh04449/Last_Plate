@@ -83,7 +83,8 @@ public class GameBootstrapper : MonoBehaviour
         Image[] customerCardImages = new Image[3];
         for (int i = 0; i < 3; i++)
         {
-            GameObject card = MakePanel("CustomerTicket" + (i + 1), hud.transform, new Color(0.96f, 0.9f, 0.75f, 0.92f), new Vector2((i - 1) * 390f, 200f), new Vector2(350f, 120f));
+            float cardX = i == 0 ? 0f : (i == 1 ? 390f : -390f);
+            GameObject card = MakePanel("CustomerTicket" + (i + 1), hud.transform, new Color(0.96f, 0.9f, 0.75f, 0.92f), new Vector2(cardX, 200f), new Vector2(350f, 120f));
             customerCardImages[i] = card.GetComponent<Image>();
             customerTexts[i] = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(0f, 9f), new Vector2(330f, 88f), 17, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
             GameObject patienceBack = MakePanel("PatienceBack", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.8f), new Vector2(0f, -49f), new Vector2(306f, 10f));
