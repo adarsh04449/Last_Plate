@@ -28,8 +28,8 @@ Changes made during development:
     one order is shown at a time so the player can focus on catching and preparing it; Dinner Rush
     and Kitchen Chaos increase pressure through faster timing and more demanding customer types.
 11. Improved first-play clarity with large recipe icons, a pulsing next-ingredient highlight,
-    color-coded plate slots, tilt-ready guidance, distinct wrong-catch audio, and stronger damage
-    and order-completion flashes. Burnt food remains the only source of life loss.
+    a visible ingredient stack on the chef's plate, tilt-ready guidance, distinct wrong-catch audio,
+    and stronger damage and order-completion flashes. Burnt food remains the only source of life loss.
 12. Added original customer portrait artwork, three expressive chef poses, and short spoken chef
     reactions for burnt food, golden catches, and completed orders. Voice cooldowns keep these
     reactions readable without overwhelming the arcade sound effects.

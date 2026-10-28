@@ -6,7 +6,7 @@ public class UIManager : MonoBehaviour
 {
     public Text timerText, scoreText, livesText, orderText, comboText, levelText, messageText, tiltPromptText;
     public Image tiltFill, damageFlash, successFlash;
-    public Image[] orderIcons, orderFrames, plateIcons, plateFrames;
+    public Image[] orderIcons, orderFrames;
     public Sprite[] ingredientSprites;
     public Text[] customerTexts;
     public Image[] patienceFills;
@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
         timerText.color = game.TimeRemaining <= 10f ? new Color(1f, 0.3f, 0.25f) : Color.white;
         scoreText.text = "SCORE  " + game.Score.ToString("0000");
         string comboLabel = game.Combo >= 2 ? "COMBO " + game.Combo + "  x" + game.Multiplier : "BUILD A COMBO";
-        comboText.text = comboLabel + (inventory == null ? "" : "   PLATE " + inventory.Count + "/" + inventory.maxSlots);
+        comboText.text = comboLabel;
         livesText.text = new string('♥', game.Lives) + new string('♡', 3 - game.Lives);
         levelText.text = DifficultyLabel(game.Difficulty);
         if (tiltFill != null && plate != null)
@@ -89,21 +89,6 @@ public class UIManager : MonoBehaviour
                 orderIcons[i].color = new Color(1f, 1f, 1f, 0.45f);
                 orderFrames[i].color = new Color(0.2f, 0.16f, 0.11f, 0.72f);
             }
-        }
-
-        for (int i = 0; plateIcons != null && i < plateIcons.Length; i++)
-        {
-            bool occupied = inventory != null && i < inventory.Count;
-            plateIcons[i].gameObject.SetActive(occupied);
-            if (!occupied) { plateFrames[i].color = new Color(0.08f, 0.12f, 0.16f, 0.88f); continue; }
-            IngredientType caught = inventory.GetTypeAt(i);
-            plateIcons[i].sprite = ingredientSprites[(int)caught];
-            plateIcons[i].preserveAspect = true;
-            bool correct = caught == order.CurrentOrder[i];
-            bool golden = inventory.IsGoldenAt(i);
-            plateIcons[i].color = golden ? new Color(1f, 0.82f, 0.2f) : Color.white;
-            plateFrames[i].color = golden ? new Color(1f, 0.66f, 0.05f, 0.98f) :
-                correct ? new Color(0.18f, 0.68f, 0.28f, 0.98f) : new Color(0.88f, 0.15f, 0.12f, 0.98f);
         }
 
         orderText.text = "NEXT: " + ShortName(order.NextRequired) + "   •   Catch the glowing recipe icon";

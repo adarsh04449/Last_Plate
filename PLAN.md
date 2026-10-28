@@ -53,7 +53,7 @@ Objective: make the restored game immediately understandable in a video or first
 
 - Replace recipe text with three large ingredient icons.
 - Highlight the next required ingredient with a bright outline or arrow.
-- Show plate slots clearly as empty, correct, wrong, or golden.
+- Show caught ingredients directly on the chef's plate; do not duplicate them in a bottom HUD.
 - Add a small “TILT READY” prompt when Space can discard an item.
 - Add a clear visual flash when a life is lost.
 - Add a short instruction line under the order card:

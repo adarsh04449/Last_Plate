@@ -125,18 +125,6 @@ public class GameBootstrapper : MonoBehaviour
         Text order = MakeText(hud.transform, "NEXT INGREDIENT", new Vector2(0f, 54f), new Vector2(900f, 42f), 19, Cream, TextAnchor.MiddleCenter);
         Text combo = MakeText(hud.transform, "BUILD A COMBO", new Vector2(445f, -300f), new Vector2(330f, 50f), 19, new Color(1f, 0.72f, 0.18f), TextAnchor.MiddleCenter);
 
-        GameObject plateHud = MakePanel("PlateHUD", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(0f, -300f), new Vector2(280f, 76f));
-        MakeText(plateHud.transform, "PLATE", new Vector2(-112f, 0f), new Vector2(60f, 60f), 15, Cream, TextAnchor.MiddleCenter);
-        Image[] plateFrames = new Image[3];
-        Image[] plateIcons = new Image[3];
-        for (int i = 0; i < 3; i++)
-        {
-            GameObject frame = MakePanel("PlateSlot" + (i + 1), plateHud.transform, new Color(0.08f, 0.12f, 0.16f, 0.88f), new Vector2(-42f + i * 70f, 0f), new Vector2(58f, 58f));
-            plateFrames[i] = frame.GetComponent<Image>();
-            plateIcons[i] = MakeSpriteImage("PlateIcon", frame.transform, foodSprites[0], Vector2.zero, new Vector2(50f, 50f));
-            plateIcons[i].gameObject.SetActive(false);
-        }
-
         GameObject energyBack = MakePanel("TiltEnergy", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(-455f, -300f), new Vector2(310f, 52f));
         MakeText(energyBack.transform, "TILT", new Vector2(-112f, 0f), new Vector2(70f, 45f), 19, Color.white, TextAnchor.MiddleCenter);
         GameObject fillObject = MakePanel("Fill", energyBack.transform, new Color(0.1f, 0.82f, 1f, 1f), new Vector2(36f, 0f), new Vector2(205f, 20f));
@@ -152,7 +140,7 @@ public class GameBootstrapper : MonoBehaviour
 
         UIManager ui = parent.AddComponent<UIManager>();
         ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltPromptText = tiltPrompt; ui.tiltFill = tiltFill;
-        ui.orderIcons = orderIcons; ui.orderFrames = orderFrames; ui.plateIcons = plateIcons; ui.plateFrames = plateFrames; ui.ingredientSprites = foodSprites;
+        ui.orderIcons = orderIcons; ui.orderFrames = orderFrames; ui.ingredientSprites = foodSprites;
         ui.damageFlash = damageFlash; ui.successFlash = successFlash;
         ui.customerTexts = customerTexts; ui.patienceFills = patienceFills; ui.customerCardImages = customerCardImages;
         ui.customerPortraits = customerPortraits; ui.customerSprites = customerSprites;
