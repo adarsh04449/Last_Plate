@@ -39,8 +39,7 @@ public class OrderManager : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;
-        // Only one ticket is active at a time, keeping the action readable while
-        // preparation stations are added in the next milestone.
+        // One active ticket keeps the order readable during the fast catching round.
         EnsureCustomerCount(1);
 
         for (int i = customers.Count - 1; i >= 0; i--)

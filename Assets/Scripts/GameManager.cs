@@ -107,11 +107,12 @@ public class GameManager : MonoBehaviour
         uiManager.Refresh();
     }
 
-    public void LoseLife(string feedback = "WRONG! PLATE CLEARED")
+    public void LoseLife(string feedback = "BURNT FOOD!")
     {
         if (State != GameState.Playing) return;
         Combo = 0;
         Lives = Mathf.Max(0, Lives - 1);
+        uiManager.ShowDamageFlash();
         uiManager.ShowCatchFeedback(feedback, false);
         uiManager.Refresh();
         if (Lives == 0) EndRound();

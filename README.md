@@ -23,6 +23,8 @@ can be recovered from by tilting instead of losing a life. Burnt food is the onl
 a life for now. Tilting consumes energy and recharges when released. One clear customer ticket is
 active at a time; later difficulty phases change the customer type and pressure rather than adding
 simultaneous orders. Golden ingredients award bonus points.
+The HUD uses large recipe icons to highlight the next required ingredient and shows plate slots
+as correct, wrong, or golden. Damage and completed orders have separate visual flashes and sounds.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.

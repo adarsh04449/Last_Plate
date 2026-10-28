@@ -27,6 +27,9 @@ Changes made during development:
 10. Replaced the single anonymous order with a named customer ticket and patience system. Only
     one order is shown at a time so the player can focus on catching and preparing it; Dinner Rush
     and Kitchen Chaos increase pressure through faster timing and more demanding customer types.
+11. Improved first-play clarity with large recipe icons, a pulsing next-ingredient highlight,
+    color-coded plate slots, tilt-ready guidance, distinct wrong-catch audio, and stronger damage
+    and order-completion flashes. Burnt food remains the only source of life loss.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

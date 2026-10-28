@@ -12,6 +12,8 @@ public class GameBootstrapper : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         Screen.SetResolution(1280, 720, false);
+        if (Camera.main != null && Camera.main.GetComponent<AudioListener>() == null)
+            Camera.main.gameObject.AddComponent<AudioListener>();
         BuildGame();
     }
 
@@ -44,7 +46,7 @@ public class GameBootstrapper : MonoBehaviour
         GameObject container = new GameObject("IngredientContainer");
         SpawnManager spawner = manager.AddComponent<SpawnManager>();
         spawner.ingredientContainer = container.transform; spawner.ingredientSprites = foods; spawner.burntSprite = burnt;
-        CreateUI(manager);
+        CreateUI(manager, foods);
     }
 
     private static void BuildBackground()
@@ -64,7 +66,7 @@ public class GameBootstrapper : MonoBehaviour
         return Sprite.Create(sheet, new Rect(column * width, row * height, width, height), new Vector2(0.5f, 0.5f), 255f);
     }
 
-    private void CreateUI(GameObject parent)
+    private void CreateUI(GameObject parent, Sprite[] foodSprites)
     {
         GameObject canvasObject = new GameObject("Canvas"); canvasObject.transform.SetParent(parent.transform);
         Canvas canvas = canvasObject.AddComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -91,21 +93,46 @@ public class GameBootstrapper : MonoBehaviour
             GameObject patience = MakePanel("PatienceFill", patienceBack.transform, new Color(0.25f, 0.85f, 0.35f), Vector2.zero, new Vector2(300f, 6f));
             patienceFills[i] = patience.GetComponent<Image>(); patienceFills[i].type = Image.Type.Filled; patienceFills[i].fillMethod = Image.FillMethod.Horizontal;
         }
-        Text order = MakeText(hud.transform, "TARGET", new Vector2(0f, 115f), new Vector2(880f, 48f), 21, Cream, TextAnchor.MiddleCenter);
+        Image[] orderFrames = new Image[3];
+        Image[] orderIcons = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject frame = MakePanel("OrderSlot" + (i + 1), hud.transform, new Color(0.2f, 0.16f, 0.11f, 0.9f), new Vector2((i - 1) * 92f, 105f), new Vector2(78f, 78f));
+            orderFrames[i] = frame.GetComponent<Image>();
+            orderIcons[i] = MakeSpriteImage("IngredientIcon", frame.transform, foodSprites[0], Vector2.zero, new Vector2(66f, 66f));
+        }
+        Text order = MakeText(hud.transform, "NEXT INGREDIENT", new Vector2(0f, 54f), new Vector2(900f, 42f), 19, Cream, TextAnchor.MiddleCenter);
         Text combo = MakeText(hud.transform, "BUILD A COMBO", new Vector2(445f, -300f), new Vector2(330f, 50f), 19, new Color(1f, 0.72f, 0.18f), TextAnchor.MiddleCenter);
+
+        GameObject plateHud = MakePanel("PlateHUD", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(0f, -300f), new Vector2(280f, 76f));
+        MakeText(plateHud.transform, "PLATE", new Vector2(-112f, 0f), new Vector2(60f, 60f), 15, Cream, TextAnchor.MiddleCenter);
+        Image[] plateFrames = new Image[3];
+        Image[] plateIcons = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject frame = MakePanel("PlateSlot" + (i + 1), plateHud.transform, new Color(0.08f, 0.12f, 0.16f, 0.88f), new Vector2(-42f + i * 70f, 0f), new Vector2(58f, 58f));
+            plateFrames[i] = frame.GetComponent<Image>();
+            plateIcons[i] = MakeSpriteImage("PlateIcon", frame.transform, foodSprites[0], Vector2.zero, new Vector2(50f, 50f));
+            plateIcons[i].gameObject.SetActive(false);
+        }
 
         GameObject energyBack = MakePanel("TiltEnergy", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(-455f, -300f), new Vector2(310f, 52f));
         MakeText(energyBack.transform, "TILT", new Vector2(-112f, 0f), new Vector2(70f, 45f), 19, Color.white, TextAnchor.MiddleCenter);
         GameObject fillObject = MakePanel("Fill", energyBack.transform, new Color(0.1f, 0.82f, 1f, 1f), new Vector2(36f, 0f), new Vector2(205f, 20f));
         Image tiltFill = fillObject.GetComponent<Image>(); tiltFill.type = Image.Type.Filled; tiltFill.fillMethod = Image.FillMethod.Horizontal; tiltFill.fillOrigin = 0;
+        Text tiltPrompt = MakeText(hud.transform, "HOLD SPACE TO TILT", new Vector2(-455f, -263f), new Vector2(320f, 34f), 14, Color.white, TextAnchor.MiddleCenter);
 
         GameObject titlePanel = MakeFullPanel("TitlePanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.88f));
         GameObject pausePanel = MakeFullPanel("PausePanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.88f)); pausePanel.SetActive(false);
         GameObject resultsPanel = MakeFullPanel("ResultsPanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.9f)); resultsPanel.SetActive(false);
+        Image damageFlash = MakeFullPanel("DamageFlash", canvasObject.transform, Color.clear).GetComponent<Image>(); damageFlash.raycastTarget = false;
+        Image successFlash = MakeFullPanel("SuccessFlash", canvasObject.transform, Color.clear).GetComponent<Image>(); successFlash.raycastTarget = false;
         Text message = MakeText(canvasObject.transform, "", Vector2.zero, new Vector2(1000f, 610f), 42, Color.white, TextAnchor.MiddleCenter);
 
         UIManager ui = parent.AddComponent<UIManager>();
-        ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltFill = tiltFill;
+        ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltPromptText = tiltPrompt; ui.tiltFill = tiltFill;
+        ui.orderIcons = orderIcons; ui.orderFrames = orderFrames; ui.plateIcons = plateIcons; ui.plateFrames = plateFrames; ui.ingredientSprites = foodSprites;
+        ui.damageFlash = damageFlash; ui.successFlash = successFlash;
         ui.customerTexts = customerTexts; ui.patienceFills = patienceFills; ui.customerCardImages = customerCardImages;
         ui.titlePanel = titlePanel; ui.pausePanel = pausePanel; ui.resultsPanel = resultsPanel; ui.hud = hud;
     }
@@ -132,6 +159,13 @@ public class GameBootstrapper : MonoBehaviour
         GameObject textObject = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text)); textObject.transform.SetParent(parent, false);
         Text text = textObject.GetComponent<Text>(); text.text = value; text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); text.fontSize = fontSize; text.fontStyle = FontStyle.Bold; text.color = color; text.alignment = alignment;
         RectTransform rect = textObject.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position; return text;
+    }
+
+    private static Image MakeSpriteImage(string name, Transform parent, Sprite sprite, Vector2 position, Vector2 size)
+    {
+        GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)); imageObject.transform.SetParent(parent, false);
+        RectTransform rect = imageObject.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position;
+        Image image = imageObject.GetComponent<Image>(); image.sprite = sprite; image.preserveAspect = true; image.raycastTarget = false; return image;
     }
 
     private static GameObject CreateSpriteObject(string name, Sprite sprite, Vector3 position, Vector3 scale, Transform parent, int sortingOrder)
