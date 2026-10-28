@@ -27,6 +27,9 @@ Changes made during development:
 10. Replaced the single anonymous order with a named customer ticket and patience system. Only
     one order is shown at a time so the player can focus on catching and preparing it; Dinner Rush
     and Kitchen Chaos increase pressure through faster timing and more demanding customer types.
+11. Completed recipes no longer score automatically. The plate enters a READY state and must be
+    carried to a serving window on the right, where the player presses E to deliver it before the
+    customer loses patience. This adds purposeful movement and a clear prepare-and-serve loop.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

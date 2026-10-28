@@ -58,8 +58,7 @@ public class PlateInventory : MonoBehaviour
         items.Add(item);
         RefreshVisualPositions();
 
-        bool orderCompleted = FindAnyObjectByType<OrderManager>().ProcessPlateCatch(GetTypes(), item.golden);
-        if (orderCompleted) Clear();
+        FindAnyObjectByType<OrderManager>().ProcessPlateCatch(GetTypes(), item.golden);
     }
 
     public void DiscardLast()

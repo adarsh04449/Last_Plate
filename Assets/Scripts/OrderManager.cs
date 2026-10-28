@@ -18,6 +18,7 @@ public sealed class CustomerTicket
 public class OrderManager : MonoBehaviour
 {
     public int Progress { get; private set; }
+    public bool IsPlateReady { get; private set; }
     public int SelectedIndex { get; private set; }
     public int CustomerCount => customers.Count;
     public IngredientType[] CurrentOrder => customers.Count == 0 ? fallbackOrder : customers[SelectedIndex].ingredients;
@@ -57,6 +58,7 @@ public class OrderManager : MonoBehaviour
         customers.Clear();
         SelectedIndex = 0;
         Progress = 0;
+        IsPlateReady = false;
         EnsureCustomerCount(1);
         FindAnyObjectByType<UIManager>()?.Refresh();
     }
@@ -79,8 +81,9 @@ public class OrderManager : MonoBehaviour
 
         if (Progress >= CurrentOrder.Length && plate.Count == CurrentOrder.Length)
         {
-            GameManager.Instance.AddCompletedOrder(customers[SelectedIndex].rewardBonus);
-            ReplaceCustomer(SelectedIndex);
+            IsPlateReady = true;
+            FindAnyObjectByType<UIManager>().ShowCatchFeedback("ORDER READY — TAKE IT RIGHT", true);
+            FindAnyObjectByType<UIManager>().Refresh();
             return true;
         }
         FindAnyObjectByType<UIManager>().Refresh();
@@ -92,7 +95,37 @@ public class OrderManager : MonoBehaviour
         Progress = 0;
         int count = Mathf.Min(plate.Count, CurrentOrder.Length);
         while (Progress < count && plate[Progress] == CurrentOrder[Progress]) Progress++;
+        if (Progress < CurrentOrder.Length || plate.Count != CurrentOrder.Length) IsPlateReady = false;
         FindAnyObjectByType<UIManager>()?.Refresh();
+    }
+
+    /// <summary>Scores a finished plate only when it reaches the serving window.</summary>
+    public bool TryServe(IReadOnlyList<IngredientType> plate)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing || customers.Count == 0)
+            return false;
+
+        if (!IsPlateReady || plate.Count != CurrentOrder.Length)
+        {
+            FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("FINISH THE ORDER FIRST", false);
+            return false;
+        }
+
+        for (int i = 0; i < CurrentOrder.Length; i++)
+        {
+            if (plate[i] != CurrentOrder[i])
+            {
+                IsPlateReady = false;
+                FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("THAT IS NOT THIS ORDER", false);
+                return false;
+            }
+        }
+
+        int bonus = customers[SelectedIndex].rewardBonus;
+        IsPlateReady = false;
+        GameManager.Instance.AddCompletedOrder(bonus);
+        ReplaceCustomer(SelectedIndex);
+        return true;
     }
 
     private void EnsureCustomerCount(int target)
@@ -125,6 +158,7 @@ public class OrderManager : MonoBehaviour
     {
         customers[index] = BuildCustomer();
         Progress = 0;
+        IsPlateReady = false;
         FindAnyObjectByType<UIManager>().Refresh();
     }
 
@@ -132,6 +166,7 @@ public class OrderManager : MonoBehaviour
     {
         bool selectedExpired = index == SelectedIndex;
         customers[index] = BuildCustomer();
+        if (selectedExpired) IsPlateReady = false;
         GameManager.Instance.LoseLife("CUSTOMER LEFT!");
         FindAnyObjectByType<AudioManager>().PlayLifeLost();
         if (selectedExpired)

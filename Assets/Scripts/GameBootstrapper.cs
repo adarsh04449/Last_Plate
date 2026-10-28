@@ -40,6 +40,7 @@ public class GameBootstrapper : MonoBehaviour
         Rigidbody2D plateBody = plate.AddComponent<Rigidbody2D>(); plateBody.bodyType = RigidbodyType2D.Kinematic; plateBody.gravityScale = 0f;
         PlateController plateController = plate.AddComponent<PlateController>(); plateController.flatSprite = flatPlate; plateController.tiltedSprite = tiltedPlate;
         plate.AddComponent<PlateInventory>();
+        BuildServingWindow(chef.transform);
 
         GameObject container = new GameObject("IngredientContainer");
         SpawnManager spawner = manager.AddComponent<SpawnManager>();
@@ -93,6 +94,7 @@ public class GameBootstrapper : MonoBehaviour
         }
         Text order = MakeText(hud.transform, "TARGET", new Vector2(0f, 115f), new Vector2(880f, 48f), 21, Cream, TextAnchor.MiddleCenter);
         Text combo = MakeText(hud.transform, "BUILD A COMBO", new Vector2(445f, -300f), new Vector2(330f, 50f), 19, new Color(1f, 0.72f, 0.18f), TextAnchor.MiddleCenter);
+        Text servingPrompt = MakeText(hud.transform, "SERVING WINDOW  →", new Vector2(445f, -245f), new Vector2(330f, 48f), 20, Cream, TextAnchor.MiddleCenter);
 
         GameObject energyBack = MakePanel("TiltEnergy", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(-455f, -300f), new Vector2(310f, 52f));
         MakeText(energyBack.transform, "TILT", new Vector2(-112f, 0f), new Vector2(70f, 45f), 19, Color.white, TextAnchor.MiddleCenter);
@@ -105,7 +107,7 @@ public class GameBootstrapper : MonoBehaviour
         Text message = MakeText(canvasObject.transform, "", Vector2.zero, new Vector2(1000f, 610f), 42, Color.white, TextAnchor.MiddleCenter);
 
         UIManager ui = parent.AddComponent<UIManager>();
-        ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltFill = tiltFill;
+        ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.servingPromptText = servingPrompt; ui.tiltFill = tiltFill;
         ui.customerTexts = customerTexts; ui.patienceFills = patienceFills; ui.customerCardImages = customerCardImages;
         ui.titlePanel = titlePanel; ui.pausePanel = pausePanel; ui.resultsPanel = resultsPanel; ui.hud = hud;
     }
@@ -139,6 +141,14 @@ public class GameBootstrapper : MonoBehaviour
         GameObject obj = new GameObject(name); if (parent != null) obj.transform.SetParent(parent);
         obj.transform.position = position; obj.transform.localScale = scale;
         SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>(); renderer.sprite = sprite; renderer.sortingOrder = sortingOrder; return obj;
+    }
+
+    private static void BuildServingWindow(Transform chef)
+    {
+        GameObject window = CreateSpriteObject("ServingWindow", MakeSolidSprite(new Color(0.12f, 0.34f, 0.36f)), new Vector3(7.25f, -3.65f, -0.05f), new Vector3(2.1f, 1.5f, 1f), null, 1);
+        CreateSpriteObject("ServingCounter", MakeSolidSprite(new Color(0.95f, 0.55f, 0.16f)), new Vector3(7.25f, -2.95f, -0.1f), new Vector3(2.45f, 0.22f, 1f), null, 2);
+        ServingStation station = window.AddComponent<ServingStation>();
+        station.chef = chef;
     }
 
     private static Sprite MakeSolidSprite(Color color)

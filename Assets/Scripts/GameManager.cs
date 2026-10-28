@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         Lives = startingLives;
         Score = CompletedOrders = Combo = BestCombo = 0;
         Difficulty = DifficultyLevel.Preparation;
+        FindAnyObjectByType<PlateInventory>()?.Clear();
         orderManager.CreateNewOrder();
         spawnManager.ResetSpawner();
         uiManager.ShowPlaying();
