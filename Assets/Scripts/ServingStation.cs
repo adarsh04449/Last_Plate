@@ -35,7 +35,7 @@ public class ServingStation : MonoBehaviour
 
         if (nearby && Input.GetKeyDown(KeyCode.E) && orders != null && plate != null)
         {
-            if (orders.TryServe(plate.CurrentTypes, plate.CurrentPrepared)) plate.Clear();
+            if (orders.TryServe(plate.CurrentTypes)) plate.Clear();
         }
     }
 }

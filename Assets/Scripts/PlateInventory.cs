@@ -11,7 +11,6 @@ public class PlateInventory : MonoBehaviour
     {
         public IngredientType type;
         public bool golden;
-        public bool prepared;
         public Sprite sprite;
         public GameObject visual;
     }
@@ -20,11 +19,9 @@ public class PlateInventory : MonoBehaviour
     public int Count => items.Count;
     public float LoadRatio => maxSlots == 0 ? 0f : items.Count / (float)maxSlots;
     public IReadOnlyList<IngredientType> CurrentTypes => GetTypes();
-    public IReadOnlyList<bool> CurrentPrepared => GetPrepared();
 
     private readonly List<PlateItem> items = new List<PlateItem>();
     private readonly List<IngredientType> typeView = new List<IngredientType>();
-    private readonly List<bool> preparedView = new List<bool>();
     private Transform displayRoot;
 
     private void Awake()
@@ -55,14 +52,13 @@ public class PlateInventory : MonoBehaviour
         {
             type = ingredient.ingredientType,
             golden = ingredient.isGolden,
-            prepared = false,
             sprite = sourceRenderer.sprite
         };
         item.visual = CreateVisual(item);
         items.Add(item);
         RefreshVisualPositions();
 
-        FindAnyObjectByType<OrderManager>().ProcessPlateCatch(GetTypes(), GetPrepared(), item.golden);
+        FindAnyObjectByType<OrderManager>().ProcessPlateCatch(GetTypes(), item.golden);
     }
 
     public void DiscardLast()
@@ -72,7 +68,7 @@ public class PlateInventory : MonoBehaviour
         Destroy(items[last].visual);
         items.RemoveAt(last);
         RefreshVisualPositions();
-        FindAnyObjectByType<OrderManager>().SyncPlate(GetTypes(), GetPrepared());
+        FindAnyObjectByType<OrderManager>().SyncPlate(GetTypes());
         FindAnyObjectByType<UIManager>().ShowCatchFeedback("DISCARDED", false);
     }
 
@@ -82,38 +78,8 @@ public class PlateInventory : MonoBehaviour
             if (item.visual != null) Destroy(item.visual);
         items.Clear();
         typeView.Clear();
-        preparedView.Clear();
-        FindAnyObjectByType<OrderManager>()?.SyncPlate(typeView, preparedView);
+        FindAnyObjectByType<OrderManager>()?.SyncPlate(typeView);
     }
-
-    public bool CanChopRequiredIngredient()
-    {
-        OrderManager orders = FindAnyObjectByType<OrderManager>();
-        int index = orders == null ? -1 : orders.ChopIndex;
-        return index >= 0 && index < items.Count && index < orders.CurrentOrder.Length &&
-            items[index].type == orders.CurrentOrder[index] && !items[index].prepared;
-    }
-
-    public bool ChopRequiredIngredient()
-    {
-        if (!CanChopRequiredIngredient())
-        {
-            FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("CATCH THE CHOP ITEM FIRST", false);
-            return false;
-        }
-
-        OrderManager orders = FindAnyObjectByType<OrderManager>();
-        PlateItem item = items[orders.ChopIndex];
-        item.prepared = true;
-        item.visual.transform.localScale = Vector3.one * 0.31f;
-        item.visual.GetComponent<SpriteRenderer>().color = item.golden ? new Color(1f, 0.85f, 0.25f) : new Color(0.65f, 1f, 0.65f);
-        orders.SyncPlate(GetTypes(), GetPrepared());
-        FindAnyObjectByType<AudioManager>()?.PlayChop();
-        FindAnyObjectByType<UIManager>()?.ShowCatchFeedback(orders.IsPlateReady ? "CHOPPED — ORDER READY!" : "INGREDIENT CHOPPED", true);
-        return true;
-    }
-
-    public bool IsPrepared(int index) => index >= 0 && index < items.Count && items[index].prepared;
 
     private GameObject CreateVisual(PlateItem item)
     {
@@ -143,12 +109,5 @@ public class PlateInventory : MonoBehaviour
         typeView.Clear();
         foreach (PlateItem item in items) typeView.Add(item.type);
         return typeView;
-    }
-
-    private IReadOnlyList<bool> GetPrepared()
-    {
-        preparedView.Clear();
-        foreach (PlateItem item in items) preparedView.Add(item.prepared);
-        return preparedView;
     }
 }

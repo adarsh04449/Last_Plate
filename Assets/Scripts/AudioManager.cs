@@ -4,7 +4,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     private AudioSource source;
-    private AudioClip catchClip, goldenClip, tiltClip, chopClip, completeClip, lostClip, levelClip, finishClip;
+    private AudioClip catchClip, goldenClip, tiltClip, completeClip, lostClip, levelClip, finishClip;
 
     private void Awake()
     {
@@ -12,7 +12,6 @@ public class AudioManager : MonoBehaviour
         catchClip = MakeSequence("Catch", new[] { 620f, 820f }, 0.055f);
         goldenClip = MakeSequence("Golden", new[] { 880f, 1180f, 1480f }, 0.06f);
         tiltClip = MakeSequence("Tilt", new[] { 340f, 260f }, 0.045f);
-        chopClip = MakeSequence("Chop", new[] { 180f, 120f, 210f }, 0.035f);
         completeClip = MakeSequence("Order Complete", new[] { 520f, 660f, 880f, 1050f }, 0.085f);
         lostClip = MakeSequence("Life Lost", new[] { 310f, 230f, 150f }, 0.1f);
         levelClip = MakeSequence("Rush Level", new[] { 440f, 660f, 440f, 880f }, 0.07f);
@@ -21,7 +20,6 @@ public class AudioManager : MonoBehaviour
 
     public void PlayCatch(bool golden) { source.PlayOneShot(golden ? goldenClip : catchClip); }
     public void PlayTilt() { source.PlayOneShot(tiltClip, 0.45f); }
-    public void PlayChop() { source.PlayOneShot(chopClip, 0.75f); }
     public void PlayOrderComplete() { source.PlayOneShot(completeClip); }
     public void PlayLifeLost() { source.PlayOneShot(lostClip); }
     public void PlayWrongIngredient() { source.PlayOneShot(tiltClip, 0.7f); }

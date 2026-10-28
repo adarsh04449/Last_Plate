@@ -30,9 +30,6 @@ Changes made during development:
 11. Completed recipes no longer score automatically. The plate enters a READY state and must be
     carried to a serving window on the right, where the player presses E to deliver it before the
     customer loses patience. This adds purposeful movement and a clear prepare-and-serve loop.
-12. Added a chopping station on the left. Every ticket marks one non-cheese ingredient as CHOP;
-    after catching it, the player must reach the board and press C before the plate can become
-    READY. Chopped food changes color and size, has its own sound, and is tracked per plate slot.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

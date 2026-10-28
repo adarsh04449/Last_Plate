@@ -4,7 +4,7 @@ using UnityEngine.UI;
 /// <summary>Formats the arcade HUD and all menu/feedback states.</summary>
 public class UIManager : MonoBehaviour
 {
-    public Text timerText, scoreText, livesText, orderText, comboText, levelText, messageText, servingPromptText, choppingPromptText;
+    public Text timerText, scoreText, livesText, orderText, comboText, levelText, messageText, servingPromptText;
     public Image tiltFill;
     public Text[] customerTexts;
     public Image[] patienceFills;
@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
             customerTexts[customerIndex].transform.parent.gameObject.SetActive(active);
             if (!active) continue;
             customerTexts[customerIndex].text = ticket.displayName.ToUpper() + "\n" +
-                ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients, ticket.chopIndex);
+                ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
             patienceFills[customerIndex].fillAmount = ticket.patience / ticket.maxPatience;
             patienceFills[customerIndex].color = ticket.patience < ticket.maxPatience * 0.3f ? new Color(1f, 0.2f, 0.18f) : new Color(0.25f, 0.85f, 0.35f);
             customerCardImages[customerIndex].color = customerIndex == order.SelectedIndex ? new Color(1f, 0.78f, 0.25f, 0.98f) : new Color(0.96f, 0.9f, 0.75f, 0.9f);
@@ -53,12 +53,9 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < order.CurrentOrder.Length; i++)
         {
             string item = ShortName(order.CurrentOrder[i]);
-            bool needsChop = order.RequiresChop(i);
-            bool chopped = inventory != null && inventory.IsPrepared(i);
-            if (i < order.Progress && (!needsChop || chopped)) sequence += "✓ " + item + "   ";
-            else if (i < order.Progress && needsChop) sequence += "[ CHOP " + item + " ]   ";
-            else if (i == order.Progress) sequence += "[ " + (needsChop ? "CHOP " : "") + item + " ]   ";
-            else sequence += (needsChop ? "CHOP " : "") + item + "   ";
+            if (i < order.Progress) sequence += "✓ " + item + "   ";
+            else if (i == order.Progress) sequence += "[ " + item + " ]   ";
+            else sequence += item + "   ";
         }
         orderText.text = sequence;
     }
@@ -69,7 +66,7 @@ public class UIManager : MonoBehaviour
         hud.SetActive(false);
         messageText.color = Color.white;
         messageText.fontSize = 42;
-        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch the order • Chop the marked item on the LEFT with C\nServe the finished plate on the RIGHT with E\nHold SPACE to discard and tilt\n\nA / D or ARROWS to move\nENTER to start";
+        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nBuild the order, carry it to the right window, then press E\nHold SPACE to discard and tilt\nGolden food scores bonus points\n\nA / D or ARROWS to move\nENTER to start";
     }
 
     public void ShowPlaying() { SetPanels(null); hud.SetActive(true); ClearMessage(); }
@@ -115,13 +112,6 @@ public class UIManager : MonoBehaviour
         servingPromptText.color = highlighted ? new Color(0.35f, 1f, 0.55f) : new Color(1f, 0.91f, 0.72f);
     }
 
-    public void SetChoppingPrompt(string text, bool highlighted)
-    {
-        if (choppingPromptText == null) return;
-        choppingPromptText.text = text;
-        choppingPromptText.color = highlighted ? new Color(0.35f, 1f, 0.55f) : new Color(1f, 0.91f, 0.72f);
-    }
-
     public void ShowDifficulty(DifficultyLevel level)
     {
         if (GameManager.Instance.State != GameState.Playing) return;
@@ -153,13 +143,13 @@ public class UIManager : MonoBehaviour
         return "MUSHROOM";
     }
 
-    private static string RecipeLine(IngredientType[] ingredients, int chopIndex)
+    private static string RecipeLine(IngredientType[] ingredients)
     {
         string line = "";
         for (int i = 0; i < ingredients.Length; i++)
         {
             if (i > 0) line += " > ";
-            line += (i == chopIndex ? "CHOP " : "") + ShortName(ingredients[i]);
+            line += ShortName(ingredients[i]);
         }
         return line;
     }
