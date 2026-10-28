@@ -63,8 +63,13 @@ public class UIManager : MonoBehaviour
             }
             customerTexts[customerIndex].text = ticket.displayName.ToUpper() + "\n" +
                 ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
-            patienceFills[customerIndex].fillAmount = ticket.patience / ticket.maxPatience;
-            patienceFills[customerIndex].color = ticket.patience < ticket.maxPatience * 0.3f ? new Color(1f, 0.2f, 0.18f) : new Color(0.25f, 0.85f, 0.35f);
+            // Resize the simple image directly so the meter works even without a UI sprite.
+            // Its left edge stays fixed while the right edge moves toward zero.
+            float patienceRatio = Mathf.Clamp01(ticket.patience / ticket.maxPatience);
+            RectTransform meter = patienceFills[customerIndex].rectTransform;
+            meter.sizeDelta = new Vector2(300f * patienceRatio, 12f);
+            meter.anchoredPosition = new Vector2(-150f + 150f * patienceRatio, 0f);
+            patienceFills[customerIndex].color = new Color(0.15f, 0.82f, 0.68f);
             customerCardImages[customerIndex].color = customerIndex == order.SelectedIndex ? new Color(1f, 0.78f, 0.25f, 0.98f) : new Color(0.96f, 0.9f, 0.75f, 0.9f);
         }
 

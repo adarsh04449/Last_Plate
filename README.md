@@ -31,6 +31,8 @@ completed orders. Short spoken reactions ("Oh no!", "Nice catch!", and "Order up
 for important moments, with cooldowns that prevent voice lines from becoming repetitive.
 Each falling ingredient now uses an individual high-resolution transparent sprite, and the plate
 uses a four-times-larger texture with a defined rim for cleaner scaling and tilting.
+The order ticket uses a fixed-color remaining-time meter that visibly shrinks as customer patience
+runs out.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.

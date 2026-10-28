@@ -36,6 +36,8 @@ Changes made during development:
 13. Replaced the smaller combined food sheet during gameplay with individual high-resolution,
     transparent ingredient sprites. The procedural plate was also increased from 128x32 to
     512x128 pixels with a cleaner rim and distinct tilted coloring.
+14. Replaced the customer timer's late green-to-red color change with a larger fixed-color meter
+    that physically shrinks from right to left, making remaining recipe time easier to judge.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

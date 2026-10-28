@@ -123,9 +123,9 @@ public class GameBootstrapper : MonoBehaviour
             customerCardImages[i] = card.GetComponent<Image>();
             customerPortraits[i] = MakeSpriteImage("CustomerPortrait", card.transform, customerSprites[0], new Vector2(-128f, 5f), new Vector2(78f, 86f));
             customerTexts[i] = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(37f, 9f), new Vector2(245f, 88f), 16, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
-            GameObject patienceBack = MakePanel("PatienceBack", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.8f), new Vector2(0f, -49f), new Vector2(306f, 10f));
-            GameObject patience = MakePanel("PatienceFill", patienceBack.transform, new Color(0.25f, 0.85f, 0.35f), Vector2.zero, new Vector2(300f, 6f));
-            patienceFills[i] = patience.GetComponent<Image>(); patienceFills[i].type = Image.Type.Filled; patienceFills[i].fillMethod = Image.FillMethod.Horizontal;
+            GameObject patienceBack = MakePanel("PatienceMeter", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.9f), new Vector2(0f, -47f), new Vector2(310f, 20f));
+            GameObject patience = MakePanel("RemainingTime", patienceBack.transform, new Color(0.15f, 0.82f, 0.68f), Vector2.zero, new Vector2(300f, 12f));
+            patienceFills[i] = patience.GetComponent<Image>();
         }
         Image[] orderFrames = new Image[3];
         Image[] orderIcons = new Image[3];
