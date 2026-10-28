@@ -1,0 +1,27 @@
+LAST PLATE — CHANGES FROM THE ORIGINAL DESIGN DOCUMENT
+
+The core concept remains the same: move a chef, catch a three-ingredient recipe in order,
+tilt the plate to avoid hazards, and survive a 60-second rush with three lives.
+
+Changes made during development:
+
+1. Added named, predefined recipes instead of fully random orders. This gives each order
+   more personality and prevents repetitive or confusing combinations.
+2. Added target-aware spawning. The next required ingredient is guaranteed to appear
+   regularly, so success depends on movement and timing instead of unlucky randomness.
+3. Plate tilting now uses a rechargeable energy meter. This makes tilting a limited tactical
+   resource rather than an unlimited way to ignore every dangerous item.
+4. Added score, catch combos, score multipliers, and rare golden ingredients. Correct play
+   is now rewarded beyond the original one-point-per-order system.
+5. Added distinct named phases, transition announcements, faster difficulty scaling, wobbling
+   ingredients, and more burnt food during Kitchen Chaos.
+6. Added an illustrated restaurant-kitchen background, cartoon chef and food artwork,
+   a styled order ticket, a tilt meter, stronger color hierarchy, and animated feedback text.
+7. Added separate sounds for normal catches, golden catches, tilting, completed orders,
+   lost lives, phase changes, and the end of the round. Background music remains intentionally absent.
+8. Added a results rank (Line Cook, Sous Chef, or Master Chef), final score, orders served,
+   and best combo to make repeat attempts more meaningful.
+
+These changes move the project away from a basic falling-object clone by making recipe order,
+resource management, target selection, risk/reward scoring, and escalating kitchen pressure
+the center of play.
