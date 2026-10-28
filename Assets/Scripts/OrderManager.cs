@@ -12,6 +12,7 @@ public sealed class CustomerTicket
     public float patience;
     public float maxPatience;
     public int rewardBonus;
+    public int chopIndex;
 }
 
 /// <summary>Owns the single active customer ticket and validates the plate against it.</summary>
@@ -24,6 +25,7 @@ public class OrderManager : MonoBehaviour
     public IngredientType[] CurrentOrder => customers.Count == 0 ? fallbackOrder : customers[SelectedIndex].ingredients;
     public string RecipeName => customers.Count == 0 ? "Garden Stack" : customers[SelectedIndex].recipeName;
     public IngredientType NextRequired => CurrentOrder[Mathf.Clamp(Progress, 0, CurrentOrder.Length - 1)];
+    public int ChopIndex => customers.Count == 0 ? 0 : customers[SelectedIndex].chopIndex;
 
     private readonly List<CustomerTicket> customers = new List<CustomerTicket>();
     private readonly IngredientType[] fallbackOrder = { IngredientType.Tomato, IngredientType.Cheese, IngredientType.Lettuce };
@@ -40,8 +42,7 @@ public class OrderManager : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;
-        // Only one ticket is active at a time, keeping the action readable while
-        // preparation stations are added in the next milestone.
+        // One ticket stays active so the catch, chop, and serve route remains readable.
         EnsureCustomerCount(1);
 
         for (int i = customers.Count - 1; i >= 0; i--)
@@ -63,10 +64,10 @@ public class OrderManager : MonoBehaviour
         FindAnyObjectByType<UIManager>()?.Refresh();
     }
 
-    public bool ProcessPlateCatch(IReadOnlyList<IngredientType> plate, bool golden)
+    public bool ProcessPlateCatch(IReadOnlyList<IngredientType> plate, IReadOnlyList<bool> prepared, bool golden)
     {
         if (GameManager.Instance.State != GameState.Playing || customers.Count == 0) return false;
-        SyncPlate(plate);
+        SyncPlate(plate, prepared);
         if (Progress == plate.Count)
         {
             GameManager.Instance.RegisterCorrectIngredient(golden);
@@ -81,31 +82,33 @@ public class OrderManager : MonoBehaviour
 
         if (Progress >= CurrentOrder.Length && plate.Count == CurrentOrder.Length)
         {
-            IsPlateReady = true;
-            FindAnyObjectByType<UIManager>().ShowCatchFeedback("ORDER READY — TAKE IT RIGHT", true);
+            FindAnyObjectByType<UIManager>().ShowCatchFeedback(IsPlateReady ? "ORDER READY — TAKE IT RIGHT" : "NEEDS CHOPPING — GO LEFT", IsPlateReady);
             FindAnyObjectByType<UIManager>().Refresh();
-            return true;
+            return IsPlateReady;
         }
         FindAnyObjectByType<UIManager>().Refresh();
         return false;
     }
 
-    public void SyncPlate(IReadOnlyList<IngredientType> plate)
+    public void SyncPlate(IReadOnlyList<IngredientType> plate, IReadOnlyList<bool> prepared)
     {
         Progress = 0;
         int count = Mathf.Min(plate.Count, CurrentOrder.Length);
         while (Progress < count && plate[Progress] == CurrentOrder[Progress]) Progress++;
-        if (Progress < CurrentOrder.Length || plate.Count != CurrentOrder.Length) IsPlateReady = false;
+        bool chopped = ChopIndex < prepared.Count && prepared[ChopIndex];
+        IsPlateReady = Progress == CurrentOrder.Length && plate.Count == CurrentOrder.Length && chopped;
         FindAnyObjectByType<UIManager>()?.Refresh();
     }
 
+    public bool RequiresChop(int index) => index == ChopIndex;
+
     /// <summary>Scores a finished plate only when it reaches the serving window.</summary>
-    public bool TryServe(IReadOnlyList<IngredientType> plate)
+    public bool TryServe(IReadOnlyList<IngredientType> plate, IReadOnlyList<bool> prepared)
     {
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing || customers.Count == 0)
             return false;
 
-        if (!IsPlateReady || plate.Count != CurrentOrder.Length)
+        if (!IsPlateReady || plate.Count != CurrentOrder.Length || ChopIndex >= prepared.Count || !prepared[ChopIndex])
         {
             FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("FINISH THE ORDER FIRST", false);
             return false;
@@ -150,8 +153,17 @@ public class OrderManager : MonoBehaviour
         return new CustomerTicket {
             type = type, displayName = name, recipeName = recipeNames[recipe],
             ingredients = (IngredientType[])recipes[recipe].Clone(), patience = patience, maxPatience = patience,
-            rewardBonus = type == CustomerType.VIP ? 150 : type == CustomerType.Impatient ? 60 : 0
+            rewardBonus = type == CustomerType.VIP ? 150 : type == CustomerType.Impatient ? 60 : 0,
+            chopIndex = PickChopIndex(recipes[recipe])
         };
+    }
+
+    private static int PickChopIndex(IngredientType[] recipe)
+    {
+        List<int> choices = new List<int>();
+        for (int i = 0; i < recipe.Length; i++)
+            if (recipe[i] != IngredientType.Cheese) choices.Add(i);
+        return choices.Count == 0 ? 0 : choices[Random.Range(0, choices.Count)];
     }
 
     private void ReplaceCustomer(int index)
@@ -172,7 +184,8 @@ public class OrderManager : MonoBehaviour
         if (selectedExpired)
         {
             PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
-            SyncPlate(inventory == null ? new IngredientType[0] : inventory.CurrentTypes);
+            SyncPlate(inventory == null ? new IngredientType[0] : inventory.CurrentTypes,
+                inventory == null ? new bool[0] : inventory.CurrentPrepared);
         }
     }
 

@@ -15,6 +15,7 @@ The scene builds its illustrated kitchen, chef, ingredients, gameplay systems, a
 
 - A/D or Left/Right: move
 - Tap/Hold Space: discard the newest plate item, then keep the plate tilted to avoid catches
+- C: chop the marked ingredient at the board on the left
 - E: serve a completed order at the window on the right
 - Enter: start/restart
 - Escape: pause/resume
@@ -22,8 +23,9 @@ The scene builds its illustrated kitchen, chef, ingredients, gameplay systems, a
 The plate visibly carries up to three ingredients. Extra weight slows the chef, and wrong food
 can be recovered from by tilting instead of immediately losing a life. Tilting consumes energy
 and recharges when released. One clear customer ticket is active at a time; later difficulty phases
-change the customer type and pressure rather than adding simultaneous orders. When all three
-correct ingredients are ready, carry the plate to the serving window on the right and press E.
+change the customer type and pressure rather than adding simultaneous orders. Each ticket marks
+one ingredient that must be chopped at the left board. When all three correct ingredients are
+prepared, carry the plate to the serving window on the right and press E.
 Golden ingredients award bonus points.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
