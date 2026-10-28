@@ -37,6 +37,9 @@ Changes made during development:
     Collection, Preparation, Cooking, Serving, and Rating now have separate backgrounds and
     controls. The global 60-second timer, lives, simultaneous hazards, and same-screen stations
     were removed. A session now contains three untimed customer orders scored on quality.
+14. Kept the ingredient-collection page intact while expanding later stages. Chopping now uses
+    three moving cut marks per ingredient, cooking requires active heat control for the full cook
+    time, and plating places all three ingredients onto the final dish before it can be served.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

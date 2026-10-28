@@ -42,20 +42,21 @@ stage.
 
 - Required vegetables are prepared one at a time.
 - A marker moves across a timing bar.
-- Space chops when the marker is inside or near the green zone.
+- Each prepared ingredient requires three visible cuts.
+- Space chops when the marker reaches a green cut mark that changes position.
 - Accuracy becomes the preparation-quality score.
 
 ### 4. Cooking
 
 - Recipes that require heat use a raw-to-burnt cooking meter.
-- Space removes the meal from heat.
-- Stopping in the green zone gives the best cooking score.
+- A/D or Left/Right controls the heat level while cooking progress advances.
+- Keeping the flame marker inside the green zone gives the best cooking score.
 - Recipes such as salad skip heat by pressing Enter.
 
 ### 5. Plate and Serve
 
-- Show the completed dish and its ingredients.
-- Enter serves it to the customer.
+- Place the three prepared ingredients onto the plate one at a time with Space.
+- Enter serves only after plating is complete.
 - A serving sound and customer reaction provide feedback.
 
 ### 6. Rating

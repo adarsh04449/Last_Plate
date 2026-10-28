@@ -54,11 +54,12 @@ public class GameBootstrapper : MonoBehaviour
         AddPageDecor(preparation.transform, new Color(0.2f, 0.62f, 0.28f), "PREPARATION COUNTER");
         Text preparationText = MakeText(preparation.transform, "PREPARE", new Vector2(0f, 165f), new Vector2(1000f, 260f), 31, Color.white, TextAnchor.MiddleCenter);
         GameObject chopBar = MakePanel("ChopTimingBar", preparation.transform, new Color(0.03f, 0.07f, 0.04f), new Vector2(0f, -65f), new Vector2(560f, 56f));
-        MakePanel("PerfectZone", chopBar.transform, new Color(0.25f, 0.9f, 0.35f), Vector2.zero, new Vector2(130f, 48f));
+        RectTransform perfectZone = MakePanel("PerfectZone", chopBar.transform, new Color(0.25f, 0.9f, 0.35f), Vector2.zero, new Vector2(110f, 48f)).GetComponent<RectTransform>();
         RectTransform chopMarker = MakePanel("KnifeMarker", chopBar.transform, Color.white, Vector2.zero, new Vector2(12f, 82f)).GetComponent<RectTransform>();
-        MakeText(preparation.transform, "TOO EARLY                         PERFECT                         TOO LATE", new Vector2(0f, -125f), new Vector2(780f, 40f), 16, Cream, TextAnchor.MiddleCenter);
+        Text cutProgress = MakeText(preparation.transform, "CUTS: □ □ □", new Vector2(0f, -135f), new Vector2(900f, 50f), 18, Cream, TextAnchor.MiddleCenter);
         PreparationStage preparationStage = systems.AddComponent<PreparationStage>();
-        preparationStage.marker = chopMarker; preparationStage.instructionText = preparationText;
+        preparationStage.marker = chopMarker; preparationStage.perfectZone = perfectZone;
+        preparationStage.instructionText = preparationText; preparationStage.cutProgressText = cutProgress;
 
         GameObject cooking = CreatePage("CookingPage", canvasObject.transform, new Color(0.25f, 0.105f, 0.025f));
         AddPageDecor(cooking.transform, new Color(0.92f, 0.38f, 0.06f), "STOVE AND MIXING AREA");
@@ -66,15 +67,27 @@ public class GameBootstrapper : MonoBehaviour
         GameObject cookBar = MakePanel("CookingBar", cooking.transform, new Color(0.08f, 0.035f, 0.015f), new Vector2(0f, -65f), new Vector2(560f, 62f));
         GameObject fillObject = MakePanel("CookingFill", cookBar.transform, new Color(1f, 0.65f, 0.15f), Vector2.zero, new Vector2(548f, 50f));
         Image cookingFill = fillObject.GetComponent<Image>(); cookingFill.type = Image.Type.Filled; cookingFill.fillMethod = Image.FillMethod.Horizontal; cookingFill.fillOrigin = 0;
-        MakePanel("PerfectHeatZone", cookBar.transform, new Color(0.2f, 1f, 0.35f, 0.35f), new Vector2(140f, 0f), new Vector2(105f, 54f));
-        MakeText(cooking.transform, "RAW                              PERFECT                              BURNT", new Vector2(0f, -125f), new Vector2(760f, 40f), 17, Cream, TextAnchor.MiddleCenter);
+        Text mealProgressLabel = MakeText(cooking.transform, "MEAL PROGRESS", new Vector2(0f, -112f), new Vector2(760f, 36f), 16, Cream, TextAnchor.MiddleCenter);
+        GameObject heatBar = MakePanel("HeatControlBar", cooking.transform, new Color(0.08f, 0.035f, 0.015f), new Vector2(0f, -190f), new Vector2(560f, 48f));
+        MakePanel("PerfectHeatZone", heatBar.transform, new Color(0.2f, 0.92f, 0.32f), Vector2.zero, new Vector2(110f, 40f));
+        RectTransform heatMarker = MakePanel("FlameMarker", heatBar.transform, Color.white, new Vector2(-75f, 0f), new Vector2(12f, 68f)).GetComponent<RectTransform>();
+        Text heatStatus = MakeText(cooking.transform, "COOKING 0%     HEAT: LOW", new Vector2(0f, -252f), new Vector2(760f, 42f), 18, Color.white, TextAnchor.MiddleCenter);
         CookingStage cookingStage = systems.AddComponent<CookingStage>();
-        cookingStage.cookingFill = cookingFill; cookingStage.instructionText = cookingText;
+        cookingStage.cookingFill = cookingFill; cookingStage.heatMarker = heatMarker;
+        cookingStage.instructionText = cookingText; cookingStage.heatStatusText = heatStatus;
+        cookingStage.cookingControls = new[] { cookBar, mealProgressLabel.gameObject, heatBar, heatStatus.gameObject };
 
         GameObject serving = CreatePage("ServingPage", canvasObject.transform, new Color(0.12f, 0.07f, 0.2f));
         AddPageDecor(serving.transform, new Color(0.48f, 0.25f, 0.72f), "PLATING AND SERVICE");
-        AddCharacter(serving.transform, chefSprite, new Vector2(-465f, -80f));
-        Text servingText = MakeText(serving.transform, "SERVE", new Vector2(170f, -15f), new Vector2(830f, 580f), 31, Color.white, TextAnchor.MiddleCenter);
+        Text servingText = MakeText(serving.transform, "PLATING COUNTER", new Vector2(0f, 190f), new Vector2(1000f, 180f), 31, Color.white, TextAnchor.MiddleCenter);
+        GameObject plate = MakePanel("DinnerPlate", serving.transform, new Color(0.92f, 0.94f, 1f), new Vector2(0f, -65f), new Vector2(520f, 190f));
+        Image[] plateSlots = new Image[3];
+        for (int i = 0; i < plateSlots.Length; i++)
+            plateSlots[i] = MakeSpriteImage("PlateIngredient" + (i + 1), plate.transform, null, new Vector2((i - 1) * 135f, 0f), new Vector2(115f, 115f));
+        Text plateStatus = MakeText(serving.transform, "Press SPACE to plate", new Vector2(0f, -220f), new Vector2(900f, 60f), 21, Cream, TextAnchor.MiddleCenter);
+        PlatingStage platingStage = systems.AddComponent<PlatingStage>();
+        platingStage.instructionText = servingText; platingStage.plateStatusText = plateStatus;
+        platingStage.ingredientSlots = plateSlots; platingStage.ingredientSprites = foodSprites;
 
         GameObject result = CreatePage("OrderResultPage", canvasObject.transform, new Color(0.05f, 0.15f, 0.12f));
         AddPageDecor(result.transform, new Color(0.12f, 0.65f, 0.4f), "CUSTOMER REVIEW");
@@ -91,7 +104,7 @@ public class GameBootstrapper : MonoBehaviour
         flow.titlePage = title; flow.orderPage = order; flow.collectionPage = collection; flow.preparationPage = preparation;
         flow.cookingPage = cooking; flow.servingPage = serving; flow.resultPage = result; flow.sessionPage = session; flow.pauseOverlay = pause;
         flow.titleText = titleText; flow.orderText = orderText; flow.servingText = servingText; flow.resultText = resultText; flow.sessionText = sessionText;
-        flow.collectionStage = collectionStage; flow.preparationStage = preparationStage; flow.cookingStage = cookingStage;
+        flow.collectionStage = collectionStage; flow.preparationStage = preparationStage; flow.cookingStage = cookingStage; flow.platingStage = platingStage;
     }
 
     private static GameObject CreatePage(string name, Transform parent, Color color)
@@ -143,5 +156,13 @@ public class GameBootstrapper : MonoBehaviour
         Text text = textObject.GetComponent<Text>(); text.text = value; text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); text.fontSize = fontSize; text.fontStyle = FontStyle.Bold; text.color = color; text.alignment = alignment;
         RectTransform rect = textObject.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position;
         return text;
+    }
+
+    private static Image MakeSpriteImage(string name, Transform parent, Sprite sprite, Vector2 position, Vector2 size)
+    {
+        GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)); imageObject.transform.SetParent(parent, false);
+        RectTransform rect = imageObject.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position;
+        Image image = imageObject.GetComponent<Image>(); image.sprite = sprite; image.preserveAspect = true;
+        return image;
     }
 }
