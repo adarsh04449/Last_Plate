@@ -25,3 +25,4 @@ change the customer type and pressure rather than adding simultaneous orders. Go
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.
+See `PLAN.md` for the current development roadmap and the features that are intentionally out of scope.
