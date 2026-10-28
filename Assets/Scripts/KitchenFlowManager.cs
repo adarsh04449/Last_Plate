@@ -22,7 +22,6 @@ public class KitchenFlowManager : MonoBehaviour
     public CollectionStage collectionStage;
     public PreparationStage preparationStage;
     public CookingStage cookingStage;
-    public PlatingStage platingStage;
 
     public KitchenPage Page { get; private set; }
     public MealRecipe CurrentRecipe => recipes[currentRecipeIndex];
@@ -36,7 +35,6 @@ public class KitchenFlowManager : MonoBehaviour
     private int sessionStars;
     private bool paused;
     private int pageChangedFrame;
-    private bool canServe;
 
     private void Awake()
     {
@@ -82,7 +80,7 @@ public class KitchenFlowManager : MonoBehaviour
 
         if (Page == KitchenPage.Title || Page == KitchenPage.SessionResult) StartSession();
         else if (Page == KitchenPage.Order) StartCollection();
-        else if (Page == KitchenPage.Serving && canServe) ServeOrder();
+        else if (Page == KitchenPage.Serving) ServeOrder();
         else if (Page == KitchenPage.OrderResult) ContinueAfterResult();
     }
 
@@ -136,12 +134,10 @@ public class KitchenFlowManager : MonoBehaviour
     public void CookingComplete(int quality)
     {
         cookingQuality = quality;
-        canServe = false;
         ChangePage(KitchenPage.Serving, servingPage);
-        platingStage.Begin(CurrentRecipe, this);
+        servingText.text = "PLATING COUNTER\n\n" + CurrentRecipe.name.ToUpper() + "\n\n" +
+            IngredientLine(CurrentRecipe) + "\n\nThe meal is prepared and ready for the customer.\n\nPress ENTER to serve";
     }
-
-    public void PlatingComplete() { canServe = true; }
 
     private void ServeOrder()
     {

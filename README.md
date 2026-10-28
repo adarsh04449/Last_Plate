@@ -17,8 +17,7 @@ The scene creates all gameplay pages and systems at runtime, so no Inspector set
 
 - Enter: start, accept an order, serve, or continue
 - A/D or Left/Right: move the collection basket
-- Space: chop and place ingredients onto the plate
-- A/D or Left/Right during cooking: control the stove heat
+- Space: chop or stop cooking
 - Escape: pause/resume
 
 ## Game flow
@@ -28,10 +27,8 @@ Customer Order → Collect Ingredients → Chop → Cook/Mix → Serve → Star 
 ```
 
 A session contains three recipes: Garden Salad, Mushroom Melt, and Veggie Skillet. Wrong
-collection catches reduce quality rather than taking a life. Preparation requires three accurate
-cuts per chopped ingredient. During cooking, the player controls the heat and tries to keep it in
-the green zone until the meal is done. Ingredients are then placed onto the final plate one at a
-time before serving. The final rating explains the quality earned in every stage.
+collection catches reduce quality rather than taking a life. Chopping and cooking use timing
+meters, and the final rating explains the quality earned in every stage.
 
 See `PLAN.md` for the current design and `DESIGN_CHANGES.txt` for differences from the original
 one-page proposal.

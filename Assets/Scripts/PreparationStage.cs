@@ -6,16 +6,13 @@ using UnityEngine.UI;
 public class PreparationStage : MonoBehaviour
 {
     public RectTransform marker;
-    public RectTransform perfectZone;
     public Text instructionText;
-    public Text cutProgressText;
 
     private readonly List<int> chopIndices = new List<int>();
     private readonly List<int> scores = new List<int>();
     private MealRecipe recipe;
     private KitchenFlowManager flow;
     private int current;
-    private int cut;
     private bool active;
     private float phase;
     private int beginFrame;
@@ -28,11 +25,9 @@ public class PreparationStage : MonoBehaviour
         scores.Clear();
         for (int i = 0; i < recipe.chop.Length; i++) if (recipe.chop[i]) chopIndices.Add(i);
         current = 0;
-        cut = 0;
         phase = 0f;
         beginFrame = Time.frameCount;
         active = true;
-        MovePerfectZone();
         RefreshInstruction();
     }
 
@@ -44,47 +39,27 @@ public class PreparationStage : MonoBehaviour
         marker.anchoredPosition = new Vector2(Mathf.Lerp(-250f, 250f, normalized), 0f);
 
         if (!Input.GetKeyDown(KeyCode.Space)) return;
-        float distance = Mathf.Abs(marker.anchoredPosition.x - perfectZone.anchoredPosition.x);
-        int score = distance <= 55f ? 100 : distance <= 125f ? 70 : 40;
+        float distance = Mathf.Abs(marker.anchoredPosition.x);
+        int score = distance <= 62f ? 100 : distance <= 145f ? 70 : 40;
         scores.Add(score);
         FindAnyObjectByType<AudioManager>()?.PlayChop();
-        cut++;
+        current++;
         phase = 0f;
 
-        if (cut >= 3)
+        if (current >= chopIndices.Count)
         {
-            cut = 0;
-            current++;
-            if (current >= chopIndices.Count)
-            {
-                active = false;
-                int total = 0;
-                foreach (int value in scores) total += value;
-                flow.PreparationComplete(scores.Count == 0 ? 100 : Mathf.RoundToInt(total / (float)scores.Count));
-                return;
-            }
+            active = false;
+            int total = 0;
+            foreach (int value in scores) total += value;
+            flow.PreparationComplete(scores.Count == 0 ? 100 : Mathf.RoundToInt(total / (float)scores.Count));
         }
-        MovePerfectZone();
-        RefreshInstruction();
+        else RefreshInstruction();
     }
 
     private void RefreshInstruction()
     {
         IngredientType ingredient = recipe.ingredients[chopIndices[current]];
         instructionText.text = "PREPARATION COUNTER\n\nCHOP " + KitchenFlowManager.IngredientName(ingredient) +
-            "   (ingredient " + (current + 1) + "/" + chopIndices.Count + ")\n\nPress SPACE when the knife reaches the green cut mark";
-        cutProgressText.text = "CUTS: " + FilledCuts(cut) + "   Move carefully—the cut mark changes position";
-    }
-
-    private void MovePerfectZone()
-    {
-        perfectZone.anchoredPosition = new Vector2(Random.Range(-165f, 165f), 0f);
-    }
-
-    private static string FilledCuts(int count)
-    {
-        string value = "";
-        for (int i = 0; i < 3; i++) value += i < count ? "■ " : "□ ";
-        return value;
+            "   (" + (current + 1) + "/" + chopIndices.Count + ")\n\nPress SPACE when the knife marker is inside the green zone";
     }
 }
