@@ -32,8 +32,14 @@ public class GameBootstrapper : MonoBehaviour
         Texture2D chefReactionSheet = Resources.Load<Texture2D>("Art/chef_reactions");
         Sprite[] chefSprites = SliceHorizontal(chefReactionSheet, 3, 300f);
         Sprite chefSprite = chefSprites[0] == null ? fallbackChef : chefSprites[0];
-        Sprite[] foods = { Slice(sheet, 1, 1), Slice(sheet, 2, 1), Slice(sheet, 0, 0), Slice(sheet, 1, 0) };
-        Sprite burnt = Slice(sheet, 2, 0);
+        Sprite[] fallbackFoods = { Slice(sheet, 1, 1), Slice(sheet, 2, 1), Slice(sheet, 0, 0), Slice(sheet, 1, 0) };
+        Sprite[] foods = {
+            LoadHighResolutionSprite("Art/ingredient_tomato_hd", fallbackFoods[0]),
+            LoadHighResolutionSprite("Art/ingredient_cheese_hd", fallbackFoods[1]),
+            LoadHighResolutionSprite("Art/ingredient_lettuce_hd", fallbackFoods[2]),
+            LoadHighResolutionSprite("Art/ingredient_mushroom_hd", fallbackFoods[3])
+        };
+        Sprite burnt = LoadHighResolutionSprite("Art/burnt_food_hd", Slice(sheet, 2, 0));
 
         GameObject chef = CreateSpriteObject("Chef", chefSprite, new Vector3(0f, -3.45f, 0f), new Vector3(1.18f, 1.18f, 1f), null, 3);
         chef.AddComponent<ChefController>();
@@ -82,6 +88,13 @@ public class GameBootstrapper : MonoBehaviour
         for (int i = 0; i < count; i++)
             sprites[i] = Sprite.Create(sheet, new Rect(i * width, 0f, width, sheet.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
         return sprites;
+    }
+
+    private static Sprite LoadHighResolutionSprite(string resourcePath, Sprite fallback)
+    {
+        Texture2D texture = Resources.Load<Texture2D>(resourcePath);
+        if (texture == null) return fallback;
+        return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 620f);
     }
 
     private void CreateUI(GameObject parent, Sprite[] foodSprites)
@@ -193,13 +206,22 @@ public class GameBootstrapper : MonoBehaviour
 
     private static Sprite MakeRoundedPlate(bool tilted)
     {
-        Texture2D texture = new Texture2D(128, 32); Color[] pixels = new Color[128 * 32];
-        for (int y = 0; y < 32; y++) for (int x = 0; x < 128; x++)
+        const int width = 512;
+        const int height = 128;
+        Texture2D texture = new Texture2D(width, height); Color[] pixels = new Color[width * height];
+        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
         {
-            float nx = (x - 63.5f) / 63.5f; float ny = (y - 15.5f) / 15.5f;
-            bool inside = nx * nx + ny * ny <= 1f;
-            pixels[y * 128 + x] = inside ? (tilted ? new Color(0.45f, 0.9f, 1f) : Color.white) : Color.clear;
+            float nx = (x - (width - 1) * 0.5f) / ((width - 1) * 0.5f);
+            float ny = (y - (height - 1) * 0.5f) / ((height - 1) * 0.5f);
+            float radius = nx * nx + ny * ny;
+            Color outer = tilted ? new Color(0.3f, 0.78f, 0.92f) : new Color(0.82f, 0.86f, 0.9f);
+            Color inner = tilted ? new Color(0.76f, 0.95f, 1f) : new Color(0.98f, 0.97f, 0.9f);
+            pixels[y * width + x] = radius > 1f ? Color.clear : radius > 0.68f ? outer : inner;
         }
-        texture.SetPixels(pixels); texture.Apply(); return Sprite.Create(texture, new Rect(0, 0, 128, 32), new Vector2(0.5f, 0.5f), 64f);
+        texture.name = tilted ? "High Resolution Tilted Plate" : "High Resolution Flat Plate";
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.SetPixels(pixels); texture.Apply();
+        return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 256f);
     }
 }

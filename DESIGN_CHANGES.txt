@@ -33,6 +33,9 @@ Changes made during development:
 12. Added original customer portrait artwork, three expressive chef poses, and short spoken chef
     reactions for burnt food, golden catches, and completed orders. Voice cooldowns keep these
     reactions readable without overwhelming the arcade sound effects.
+13. Replaced the smaller combined food sheet during gameplay with individual high-resolution,
+    transparent ingredient sprites. The procedural plate was also increased from 128x32 to
+    512x128 pixels with a cleaner rim and distinct tilted coloring.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

@@ -123,7 +123,9 @@ effects becoming repetitive or overwhelming.
 
 Current progress: customer portraits, chef ready/worried/celebration poses, distinct action sounds,
 and the spoken reactions “Oh no!”, “Nice catch!”, and “Order up!” are implemented. The voice system
-uses cooldowns and allows damage reactions to interrupt celebratory speech.
+uses cooldowns and allows damage reactions to interrupt celebratory speech. All five falling-food
+assets now use individual high-resolution transparent sprites, and the plate texture has been
+upgraded for clean scaling.
 
 ### Phase 6 — Replayability and Submission Polish
 
