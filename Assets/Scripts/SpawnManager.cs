@@ -28,6 +28,7 @@ public class SpawnManager : MonoBehaviour
         spawnsSinceTarget = 2;
         spawning = true;
         FindAnyObjectByType<PlateController>()?.ResetEnergy();
+        FindAnyObjectByType<PlateInventory>()?.Clear();
     }
 
     public void StopSpawning() { spawning = false; }

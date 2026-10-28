@@ -27,7 +27,7 @@ public class FallingIngredient : MonoBehaviour
     {
         if (resolved) return;
         resolved = true;
-        FindAnyObjectByType<OrderManager>().ProcessIngredient(ingredientType, isGolden);
+        plate.GetComponent<PlateInventory>().TryCatch(this);
         Destroy(gameObject);
     }
 }

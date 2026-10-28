@@ -21,6 +21,9 @@ Changes made during development:
    lost lives, phase changes, and the end of the round. Background music remains intentionally absent.
 8. Added a results rank (Line Cook, Sous Chef, or Master Chef), final score, orders served,
    and best combo to make repeat attempts more meaningful.
+9. Replaced instant wrong-ingredient damage with a visible three-slot plate inventory. Wrong
+   ingredients occupy space and must be intentionally discarded by tilting; carrying more food
+   also slows the chef. Burnt food remains immediately dangerous.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

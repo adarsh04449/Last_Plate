@@ -39,6 +39,7 @@ public class GameBootstrapper : MonoBehaviour
         BoxCollider2D plateCollider = plate.AddComponent<BoxCollider2D>(); plateCollider.isTrigger = true; plateCollider.size = new Vector2(1.8f, 1.3f);
         Rigidbody2D plateBody = plate.AddComponent<Rigidbody2D>(); plateBody.bodyType = RigidbodyType2D.Kinematic; plateBody.gravityScale = 0f;
         PlateController plateController = plate.AddComponent<PlateController>(); plateController.flatSprite = flatPlate; plateController.tiltedSprite = tiltedPlate;
+        plate.AddComponent<PlateInventory>();
 
         GameObject container = new GameObject("IngredientContainer");
         SpawnManager spawner = manager.AddComponent<SpawnManager>();

@@ -26,7 +26,11 @@ public class PlateController : MonoBehaviour
         IsTilted = playing && Input.GetKey(KeyCode.Space) && TiltEnergy > 0.03f;
         TiltEnergy = Mathf.Clamp(TiltEnergy + (IsTilted ? -1f : rechargePerSecond) * Time.deltaTime, 0f, maxTiltEnergy);
 
-        if (IsTilted && !wasTilted) FindAnyObjectByType<AudioManager>().PlayTilt();
+        if (IsTilted && !wasTilted)
+        {
+            FindAnyObjectByType<AudioManager>().PlayTilt();
+            GetComponent<PlateInventory>().DiscardLast();
+        }
         wasTilted = IsTilted;
         if (tiltedSprite != null && flatSprite != null) spriteRenderer.sprite = IsTilted ? tiltedSprite : flatSprite;
         spriteRenderer.color = IsTilted ? new Color(0.55f, 0.9f, 1f) : Color.white;

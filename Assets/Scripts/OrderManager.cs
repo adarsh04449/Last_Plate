@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>Chooses named recipes and validates catches in strict sequence.</summary>
@@ -29,27 +30,40 @@ public class OrderManager : MonoBehaviour
         FindAnyObjectByType<UIManager>()?.Refresh();
     }
 
-    public void ProcessIngredient(IngredientType ingredient, bool golden)
+    public bool ProcessPlateCatch(IReadOnlyList<IngredientType> plate, bool golden)
     {
-        if (GameManager.Instance.State != GameState.Playing) return;
+        if (GameManager.Instance.State != GameState.Playing) return false;
+        SyncPlate(plate);
 
-        if (ingredient == NextRequired)
+        bool newestItemIsCorrect = Progress == plate.Count;
+        if (newestItemIsCorrect)
         {
-            Progress++;
             GameManager.Instance.RegisterCorrectIngredient(golden);
             FindAnyObjectByType<AudioManager>().PlayCatch(golden);
-            if (Progress >= CurrentOrder.Length)
-            {
-                GameManager.Instance.AddCompletedOrder();
-                CreateNewOrder();
-            }
         }
         else
         {
-            Progress = 0;
-            GameManager.Instance.LoseLife();
-            FindAnyObjectByType<AudioManager>().PlayLifeLost();
+            GameManager.Instance.BreakCombo();
+            FindAnyObjectByType<UIManager>().ShowCatchFeedback("WRONG — TILT TO DISCARD", false);
+            FindAnyObjectByType<AudioManager>().PlayWrongIngredient();
         }
+
+        if (Progress >= CurrentOrder.Length && plate.Count == CurrentOrder.Length)
+        {
+            GameManager.Instance.AddCompletedOrder();
+            CreateNewOrder();
+            return true;
+        }
+
         FindAnyObjectByType<UIManager>().Refresh();
+        return false;
+    }
+
+    public void SyncPlate(IReadOnlyList<IngredientType> plate)
+    {
+        Progress = 0;
+        int count = Mathf.Min(plate.Count, CurrentOrder.Length);
+        while (Progress < count && plate[Progress] == CurrentOrder[Progress]) Progress++;
+        FindAnyObjectByType<UIManager>()?.Refresh();
     }
 }

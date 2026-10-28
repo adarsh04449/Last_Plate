@@ -12,7 +12,9 @@ public class ChefController : MonoBehaviour
         float input = 0f;
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) input = -1f;
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) input = 1f;
-        velocity = Mathf.MoveTowards(velocity, input * moveSpeed, 28f * Time.deltaTime);
+        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
+        float weightMultiplier = inventory == null ? 1f : Mathf.Lerp(1f, 0.72f, inventory.LoadRatio);
+        velocity = Mathf.MoveTowards(velocity, input * moveSpeed * weightMultiplier, 28f * Time.deltaTime);
         Vector3 position = transform.position;
         position.x = Mathf.Clamp(position.x + velocity * Time.deltaTime, -horizontalLimit, horizontalLimit);
         transform.position = position;

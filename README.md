@@ -14,11 +14,13 @@ The scene builds its illustrated kitchen, chef, ingredients, gameplay systems, a
 ## Controls
 
 - A/D or Left/Right: move
-- Hold Space: tilt the plate
+- Tap/Hold Space: discard the newest plate item, then keep the plate tilted to avoid catches
 - Enter: start/restart
 - Escape: pause/resume
 
-Tilting consumes energy and recharges when released. Golden ingredients award bonus points.
+The plate visibly carries up to three ingredients. Extra weight slows the chef, and wrong food
+can be recovered from by tilting instead of immediately losing a life. Tilting consumes energy
+and recharges when released. Golden ingredients award bonus points.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.

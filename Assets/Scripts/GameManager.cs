@@ -101,6 +101,12 @@ public class GameManager : MonoBehaviour
         FindAnyObjectByType<AudioManager>().PlayOrderComplete();
     }
 
+    public void BreakCombo()
+    {
+        Combo = 0;
+        uiManager.Refresh();
+    }
+
     public void LoseLife()
     {
         if (State != GameState.Playing) return;

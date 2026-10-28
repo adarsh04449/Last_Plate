@@ -13,12 +13,14 @@ public class UIManager : MonoBehaviour
         GameManager game = GameManager.Instance;
         OrderManager order = FindAnyObjectByType<OrderManager>();
         PlateController plate = FindAnyObjectByType<PlateController>();
+        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
         if (game == null || order == null) return;
 
         timerText.text = Mathf.CeilToInt(game.TimeRemaining).ToString("00") + "s";
         timerText.color = game.TimeRemaining <= 10f ? new Color(1f, 0.3f, 0.25f) : Color.white;
         scoreText.text = "SCORE  " + game.Score.ToString("0000");
-        comboText.text = game.Combo >= 2 ? "COMBO " + game.Combo + "   x" + game.Multiplier : "BUILD A COMBO";
+        string comboLabel = game.Combo >= 2 ? "COMBO " + game.Combo + "  x" + game.Multiplier : "BUILD A COMBO";
+        comboText.text = comboLabel + (inventory == null ? "" : "   PLATE " + inventory.Count + "/" + inventory.maxSlots);
         livesText.text = new string('♥', game.Lives) + new string('♡', 3 - game.Lives);
         levelText.text = DifficultyLabel(game.Difficulty);
         if (tiltFill != null && plate != null) tiltFill.fillAmount = plate.EnergyNormalized;

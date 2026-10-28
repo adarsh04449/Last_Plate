@@ -22,6 +22,7 @@ public class AudioManager : MonoBehaviour
     public void PlayTilt() { source.PlayOneShot(tiltClip, 0.45f); }
     public void PlayOrderComplete() { source.PlayOneShot(completeClip); }
     public void PlayLifeLost() { source.PlayOneShot(lostClip); }
+    public void PlayWrongIngredient() { source.PlayOneShot(tiltClip, 0.7f); }
     public void PlayLevelUp() { source.PlayOneShot(levelClip); }
     public void PlayRoundFinished() { source.PlayOneShot(finishClip); }
 
