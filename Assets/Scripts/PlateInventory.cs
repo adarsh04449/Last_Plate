@@ -18,6 +18,7 @@ public class PlateInventory : MonoBehaviour
     public int maxSlots = 3;
     public int Count => items.Count;
     public float LoadRatio => maxSlots == 0 ? 0f : items.Count / (float)maxSlots;
+    public IReadOnlyList<IngredientType> CurrentTypes => GetTypes();
 
     private readonly List<PlateItem> items = new List<PlateItem>();
     private readonly List<IngredientType> typeView = new List<IngredientType>();
@@ -34,7 +35,7 @@ public class PlateInventory : MonoBehaviour
     {
         if (ingredient.ingredientType == IngredientType.BurntFood)
         {
-            GameManager.Instance.LoseLife();
+            GameManager.Instance.LoseLife("BURNT FOOD!");
             FindAnyObjectByType<AudioManager>().PlayLifeLost();
             return;
         }

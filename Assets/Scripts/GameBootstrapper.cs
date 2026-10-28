@@ -78,9 +78,20 @@ public class GameBootstrapper : MonoBehaviour
         Text level = MakeText(topBar.transform, "PREPARATION", Vector2.zero, new Vector2(320f, 70f), 24, Cream, TextAnchor.MiddleCenter);
         Text score = MakeText(topBar.transform, "SCORE  0000", new Vector2(485f, 0f), new Vector2(260f, 70f), 30, Color.white, TextAnchor.MiddleRight);
 
-        GameObject orderCard = MakePanel("OrderTicket", hud.transform, new Color(0.98f, 0.9f, 0.7f, 0.96f), new Vector2(0f, 230f), new Vector2(780f, 105f));
-        Text order = MakeText(orderCard.transform, "ORDER", Vector2.zero, new Vector2(750f, 92f), 25, new Color(0.17f, 0.08f, 0.04f), TextAnchor.MiddleCenter);
-        Text combo = MakeText(hud.transform, "BUILD A COMBO", new Vector2(445f, 215f), new Vector2(300f, 55f), 23, new Color(1f, 0.72f, 0.18f), TextAnchor.MiddleCenter);
+        Text[] customerTexts = new Text[3];
+        Image[] patienceFills = new Image[3];
+        Image[] customerCardImages = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject card = MakePanel("CustomerTicket" + (i + 1), hud.transform, new Color(0.96f, 0.9f, 0.75f, 0.92f), new Vector2((i - 1) * 390f, 200f), new Vector2(350f, 120f));
+            customerCardImages[i] = card.GetComponent<Image>();
+            customerTexts[i] = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(0f, 9f), new Vector2(330f, 88f), 17, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
+            GameObject patienceBack = MakePanel("PatienceBack", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.8f), new Vector2(0f, -49f), new Vector2(306f, 10f));
+            GameObject patience = MakePanel("PatienceFill", patienceBack.transform, new Color(0.25f, 0.85f, 0.35f), Vector2.zero, new Vector2(300f, 6f));
+            patienceFills[i] = patience.GetComponent<Image>(); patienceFills[i].type = Image.Type.Filled; patienceFills[i].fillMethod = Image.FillMethod.Horizontal;
+        }
+        Text order = MakeText(hud.transform, "TARGET", new Vector2(0f, 115f), new Vector2(880f, 48f), 21, Cream, TextAnchor.MiddleCenter);
+        Text combo = MakeText(hud.transform, "BUILD A COMBO", new Vector2(445f, -300f), new Vector2(330f, 50f), 19, new Color(1f, 0.72f, 0.18f), TextAnchor.MiddleCenter);
 
         GameObject energyBack = MakePanel("TiltEnergy", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(-455f, -300f), new Vector2(310f, 52f));
         MakeText(energyBack.transform, "TILT", new Vector2(-112f, 0f), new Vector2(70f, 45f), 19, Color.white, TextAnchor.MiddleCenter);
@@ -94,6 +105,7 @@ public class GameBootstrapper : MonoBehaviour
 
         UIManager ui = parent.AddComponent<UIManager>();
         ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltFill = tiltFill;
+        ui.customerTexts = customerTexts; ui.patienceFills = patienceFills; ui.customerCardImages = customerCardImages;
         ui.titlePanel = titlePanel; ui.pausePanel = pausePanel; ui.resultsPanel = resultsPanel; ui.hud = hud;
     }
 

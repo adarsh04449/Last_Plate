@@ -24,6 +24,9 @@ Changes made during development:
 9. Replaced instant wrong-ingredient damage with a visible three-slot plate inventory. Wrong
    ingredients occupy space and must be intentionally discarded by tilting; carrying more food
    also slows the chef. Burnt food remains immediately dangerous.
+10. Replaced the single anonymous order with a growing customer queue. Preparation begins with
+    one guest, Dinner Rush adds a second, and Kitchen Chaos adds a third. Number keys select the
+    target ticket, patience can expire, and impatient or VIP customers change risk and reward.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

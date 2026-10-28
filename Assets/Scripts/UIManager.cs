@@ -6,6 +6,9 @@ public class UIManager : MonoBehaviour
 {
     public Text timerText, scoreText, livesText, orderText, comboText, levelText, messageText;
     public Image tiltFill;
+    public Text[] customerTexts;
+    public Image[] patienceFills;
+    public Image[] customerCardImages;
     public GameObject titlePanel, pausePanel, resultsPanel, hud;
 
     public void Refresh()
@@ -25,7 +28,20 @@ public class UIManager : MonoBehaviour
         levelText.text = DifficultyLabel(game.Difficulty);
         if (tiltFill != null && plate != null) tiltFill.fillAmount = plate.EnergyNormalized;
 
-        string sequence = order.RecipeName.ToUpper() + "\n";
+        for (int customerIndex = 0; customerTexts != null && customerIndex < customerTexts.Length; customerIndex++)
+        {
+            CustomerTicket ticket = order.GetCustomer(customerIndex);
+            bool active = ticket != null;
+            customerTexts[customerIndex].transform.parent.gameObject.SetActive(active);
+            if (!active) continue;
+            customerTexts[customerIndex].text = "[" + (customerIndex + 1) + "] " + ticket.displayName.ToUpper() + "\n" +
+                ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
+            patienceFills[customerIndex].fillAmount = ticket.patience / ticket.maxPatience;
+            patienceFills[customerIndex].color = ticket.patience < ticket.maxPatience * 0.3f ? new Color(1f, 0.2f, 0.18f) : new Color(0.25f, 0.85f, 0.35f);
+            customerCardImages[customerIndex].color = customerIndex == order.SelectedIndex ? new Color(1f, 0.78f, 0.25f, 0.98f) : new Color(0.96f, 0.9f, 0.75f, 0.9f);
+        }
+
+        string sequence = "TARGET: " + order.RecipeName.ToUpper() + "   ";
         for (int i = 0; i < order.CurrentOrder.Length; i++)
         {
             string item = ShortName(order.CurrentOrder[i]);
@@ -42,7 +58,7 @@ public class UIManager : MonoBehaviour
         hud.SetActive(false);
         messageText.color = Color.white;
         messageText.fontSize = 42;
-        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch each recipe in order\nHold SPACE to tilt — energy is limited\nGolden food scores bonus points\n\nA / D or ARROWS to move\nENTER to start";
+        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch each recipe in order\n1 / 2 / 3 selects a customer\nHold SPACE to discard and tilt\nGolden food scores bonus points\n\nA / D or ARROWS to move\nENTER to start";
     }
 
     public void ShowPlaying() { SetPanels(null); hud.SetActive(true); ClearMessage(); }
@@ -110,5 +126,16 @@ public class UIManager : MonoBehaviour
         if (type == IngredientType.Cheese) return "CHEESE";
         if (type == IngredientType.Lettuce) return "LETTUCE";
         return "MUSHROOM";
+    }
+
+    private static string RecipeLine(IngredientType[] ingredients)
+    {
+        string line = "";
+        for (int i = 0; i < ingredients.Length; i++)
+        {
+            if (i > 0) line += " > ";
+            line += ShortName(ingredients[i]);
+        }
+        return line;
     }
 }

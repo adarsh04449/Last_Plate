@@ -92,10 +92,10 @@ public class GameManager : MonoBehaviour
         uiManager.ShowCatchFeedback(golden ? "GOLDEN +" + points : "+" + points, golden);
     }
 
-    public void AddCompletedOrder()
+    public void AddCompletedOrder(int customerBonus = 0)
     {
         CompletedOrders++;
-        int points = 100 * Multiplier;
+        int points = (100 + customerBonus) * Multiplier;
         Score += points;
         uiManager.ShowOrderComplete(points);
         FindAnyObjectByType<AudioManager>().PlayOrderComplete();
@@ -107,12 +107,12 @@ public class GameManager : MonoBehaviour
         uiManager.Refresh();
     }
 
-    public void LoseLife()
+    public void LoseLife(string feedback = "WRONG! PLATE CLEARED")
     {
         if (State != GameState.Playing) return;
         Combo = 0;
         Lives = Mathf.Max(0, Lives - 1);
-        uiManager.ShowCatchFeedback("WRONG! PLATE CLEARED", false);
+        uiManager.ShowCatchFeedback(feedback, false);
         uiManager.Refresh();
         if (Lives == 0) EndRound();
     }
