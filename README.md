@@ -19,9 +19,10 @@ The scene builds its illustrated kitchen, chef, ingredients, gameplay systems, a
 - Escape: pause/resume
 
 The plate visibly carries up to three ingredients. Extra weight slows the chef, and wrong food
-can be recovered from by tilting instead of immediately losing a life. Tilting consumes energy
-and recharges when released. One clear customer ticket is active at a time; later difficulty phases
-change the customer type and pressure rather than adding simultaneous orders. Golden ingredients award bonus points.
+can be recovered from by tilting instead of losing a life. Burnt food is the only item that removes
+a life for now. Tilting consumes energy and recharges when released. One clear customer ticket is
+active at a time; later difficulty phases change the customer type and pressure rather than adding
+simultaneous orders. Golden ingredients award bonus points.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.

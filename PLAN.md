@@ -42,6 +42,8 @@ These rules prevent the game from becoming confusing again:
 5. Do not add a second required minigame or station until the catching loop is polished.
 6. Mistakes should be recoverable when possible; avoid stacking several punishments at once.
 7. Add one feature, test it, then move to the next feature.
+8. Burnt food is the only hazard that removes a life for now. Wrong ingredients remain
+   recoverable by tilting, and a customer leaving replaces the order without removing a life.
 
 ## Feature Roadmap
 
@@ -138,7 +140,9 @@ Objective: make the game easy to grade and easy to replay.
 - Wrong ingredients do not create duplicate penalties.
 - Tilt prevents catches while active and discards only the intended item.
 - Plate-full feedback is clear.
-- Burnt food removes exactly one life.
+- Wrong ingredients do not remove lives; they occupy plate space and can be discarded with tilt.
+- Burnt food removes exactly one life and cannot remove more than one life per item.
+- A customer timing out replaces the order without removing a life.
 - Golden ingredients and combo multipliers award the correct score.
 - New orders always contain three ingredients.
 - The timer ends the round correctly.

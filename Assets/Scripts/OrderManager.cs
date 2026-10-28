@@ -132,8 +132,8 @@ public class OrderManager : MonoBehaviour
     {
         bool selectedExpired = index == SelectedIndex;
         customers[index] = BuildCustomer();
-        GameManager.Instance.LoseLife("CUSTOMER LEFT!");
-        FindAnyObjectByType<AudioManager>().PlayLifeLost();
+        // Burnt food is the only life-losing hazard for now; patience only replaces the order.
+        FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("CUSTOMER LEFT — NEW ORDER", false);
         if (selectedExpired)
         {
             PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
