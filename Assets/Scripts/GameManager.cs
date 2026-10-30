@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
         CancelInvoke();
         Time.timeScale = 1f;
         State = GameState.Playing;
+        FindAnyObjectByType<AudioManager>()?.ResetPlayback();
         TimeRemaining = roundDuration;
         Lives = startingLives;
         Score = CompletedOrders = Combo = BestCombo = 0;

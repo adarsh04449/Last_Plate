@@ -1,18 +1,26 @@
 using UnityEngine;
 
-/// <summary>Creates a small original arcade sound set at runtime. There is deliberately no music loop.</summary>
+/// <summary>Mixes arcade effects with human-recorded chef reactions. There is no music loop.</summary>
 public class AudioManager : MonoBehaviour
 {
+    [Header("Mix")]
+    [Range(0f, 1f)] public float effectsVolume = 0.35f;
+    [Range(0f, 1f)] public float voiceVolume = 0.8f;
+
     private AudioSource source;
     private AudioSource voiceSource;
     private AudioClip catchClip, goldenClip, tiltClip, wrongClip, completeClip, lostClip, levelClip, finishClip;
-    private AudioClip ohNoVoice, niceCatchVoice, orderUpVoice;
+    private AudioClip[] damageVoices, goldenVoices, completeVoices;
+    private int damageIndex, goldenIndex, completeIndex;
+    private int activeVoicePriority = -1;
     private float nextVoiceTime;
 
     private void Awake()
     {
-        source = gameObject.AddComponent<AudioSource>(); source.playOnAwake = false; source.volume = 0.45f;
-        voiceSource = gameObject.AddComponent<AudioSource>(); voiceSource.playOnAwake = false; voiceSource.volume = 0.72f;
+        source = gameObject.AddComponent<AudioSource>(); source.playOnAwake = false; source.volume = effectsVolume;
+        voiceSource = gameObject.AddComponent<AudioSource>(); voiceSource.playOnAwake = false; voiceSource.volume = voiceVolume;
+        voiceSource.spatialBlend = 0f;
+        voiceSource.pitch = 1f;
         catchClip = MakeSequence("Catch", new[] { 620f, 820f }, 0.055f);
         goldenClip = MakeSequence("Golden", new[] { 880f, 1180f, 1480f }, 0.06f);
         tiltClip = MakeSequence("Tilt", new[] { 340f, 260f }, 0.045f);
@@ -21,28 +29,59 @@ public class AudioManager : MonoBehaviour
         lostClip = MakeSequence("Life Lost", new[] { 310f, 230f, 150f }, 0.1f);
         levelClip = MakeSequence("Rush Level", new[] { 440f, 660f, 440f, 880f }, 0.07f);
         finishClip = MakeSequence("Round Finished", new[] { 720f, 620f, 520f, 390f }, 0.12f);
-        ohNoVoice = Resources.Load<AudioClip>("Audio/chef_oh_no");
-        niceCatchVoice = Resources.Load<AudioClip>("Audio/chef_nice_catch");
-        orderUpVoice = Resources.Load<AudioClip>("Audio/chef_order_up");
+        damageVoices = LoadVoicePair("chef_damage");
+        goldenVoices = LoadVoicePair("chef_golden");
+        completeVoices = LoadVoicePair("chef_complete");
+    }
+
+    private void Update()
+    {
+        // Give the actor room in the mix while preserving audible gameplay feedback.
+        float targetVolume = effectsVolume * (voiceSource.isPlaying ? 0.35f : 1f);
+        source.volume = Mathf.MoveTowards(source.volume, targetVolume, Time.unscaledDeltaTime * 3f);
+        voiceSource.volume = voiceVolume;
     }
 
     public void PlayCatch(bool golden)
     {
         source.PlayOneShot(golden ? goldenClip : catchClip);
-        if (golden) PlayVoice(niceCatchVoice, 2.5f);
+        if (golden) PlayVoice(goldenVoices, ref goldenIndex, 2.5f, 0);
     }
     public void PlayTilt() { source.PlayOneShot(tiltClip, 0.45f); }
-    public void PlayOrderComplete() { source.PlayOneShot(completeClip); PlayVoice(orderUpVoice, 1.6f); }
-    public void PlayLifeLost() { source.PlayOneShot(lostClip); PlayVoice(ohNoVoice, 1.2f, true); }
+    public void PlayOrderComplete() { source.PlayOneShot(completeClip); PlayVoice(completeVoices, ref completeIndex, 1.6f, 1); }
+    public void PlayLifeLost() { source.PlayOneShot(lostClip); PlayVoice(damageVoices, ref damageIndex, 1.2f, 2); }
     public void PlayWrongIngredient() { source.PlayOneShot(wrongClip, 0.8f); }
     public void PlayLevelUp() { source.PlayOneShot(levelClip); }
     public void PlayRoundFinished() { source.PlayOneShot(finishClip); }
 
-    private void PlayVoice(AudioClip clip, float cooldown, bool interrupt = false)
+    public void ResetPlayback()
     {
-        if (clip == null || (!interrupt && (Time.unscaledTime < nextVoiceTime || voiceSource.isPlaying))) return;
-        if (interrupt) voiceSource.Stop();
+        source.Stop();
+        voiceSource.Stop();
+        source.volume = effectsVolume;
+        nextVoiceTime = 0f;
+        activeVoicePriority = -1;
+    }
+
+    private static AudioClip[] LoadVoicePair(string name)
+    {
+        return new[] {
+            Resources.Load<AudioClip>("Audio/" + name + "_01"),
+            Resources.Load<AudioClip>("Audio/" + name + "_02")
+        };
+    }
+
+    private void PlayVoice(AudioClip[] clips, ref int nextIndex, float cooldown, int priority)
+    {
+        // Damage can interrupt a cheer; repeated damage cannot constantly restart the voice.
+        if ((voiceSource.isPlaying || Time.unscaledTime < nextVoiceTime) && priority <= activeVoicePriority) return;
+        AudioClip clip = clips[nextIndex];
+        if (clip == null) return;
+        nextIndex = (nextIndex + 1) % clips.Length;
+        voiceSource.Stop();
         voiceSource.clip = clip;
+        activeVoicePriority = priority;
+        source.volume = effectsVolume * 0.35f;
         voiceSource.Play();
         nextVoiceTime = Time.unscaledTime + cooldown;
     }

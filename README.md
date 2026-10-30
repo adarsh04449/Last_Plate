@@ -27,8 +27,9 @@ The HUD uses large recipe icons to highlight the next required ingredient. Caugh
 remain visible as a physical stack above the chef's plate instead of being repeated in another HUD.
 Damage and completed orders have separate visual flashes and sounds.
 Customer types now have distinct cartoon portraits, and the chef visibly reacts to burnt food and
-completed orders. Short spoken reactions ("Oh no!", "Nice catch!", and "Order up!") are used only
-for important moments, with cooldowns that prevent voice lines from becoming repetitive.
+completed orders. Human-recorded reactions by Brandon Song replace the original text-to-speech
+clips. Each event has two takes, played at their original pitch and speed, with cooldowns and
+quieter effects during speech. See `AUDIO_CREDITS.txt` for the source and CC0 license.
 Each falling ingredient now uses an individual high-resolution transparent sprite, and the plate
 uses a four-times-larger texture with a defined rim for cleaner scaling and tilting.
 The order ticket uses a fixed-color remaining-time meter that visibly shrinks as customer patience

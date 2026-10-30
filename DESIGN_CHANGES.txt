@@ -38,6 +38,10 @@ Changes made during development:
     512x128 pixels with a cleaner rim and distinct tilted coloring.
 14. Replaced the customer timer's late green-to-red color change with a larger fixed-color meter
     that physically shrinks from right to left, making remaining recipe time easier to judge.
+15. Replaced robotic text-to-speech with human-recorded CC0 reactions by Brandon Song. Each
+    event has two takes, played at the original pitch and speed. Short negative, positive, and
+    victory reactions replace the old synthesized phrases. Effects become quieter during speech,
+    and priority/cooldown rules prevent overlapping or repeatedly interrupted voices.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

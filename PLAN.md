@@ -122,8 +122,10 @@ Acceptance test: every important player action has readable visual and audio fee
 effects becoming repetitive or overwhelming.
 
 Current progress: customer portraits, chef ready/worried/celebration poses, distinct action sounds,
-and the spoken reactions “Oh no!”, “Nice catch!”, and “Order up!” are implemented. The voice system
-uses cooldowns and allows damage reactions to interrupt celebratory speech. All five falling-food
+and human-recorded disappointed, positive, and victory reactions are implemented. The original
+text-to-speech clips have been replaced with CC0 performances by Brandon Song. Each event has two
+takes, and effects become quieter during speech. The voice system uses cooldowns and allows
+damage reactions to interrupt celebratory speech. All five falling-food
 assets now use individual high-resolution transparent sprites, and the plate texture has been
 upgraded for clean scaling.
 
