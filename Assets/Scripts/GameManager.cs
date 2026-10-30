@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Round")]
-    public float roundDuration = 60f;
+    public float roundDuration = 120f;
     public int startingLives = 3;
 
     public GameState State { get; private set; } = GameState.Title;
@@ -54,8 +54,9 @@ public class GameManager : MonoBehaviour
 
         if (State != GameState.Playing) return;
         TimeRemaining = Mathf.Max(0f, TimeRemaining - Time.deltaTime);
-        DifficultyLevel newDifficulty = TimeRemaining > 40f ? DifficultyLevel.Preparation :
-            TimeRemaining > 20f ? DifficultyLevel.DinnerRush : DifficultyLevel.KitchenChaos;
+        // Divide the configured round into three equal phases (40 seconds each by default).
+        DifficultyLevel newDifficulty = TimeRemaining > roundDuration * (2f / 3f) ? DifficultyLevel.Preparation :
+            TimeRemaining > roundDuration / 3f ? DifficultyLevel.DinnerRush : DifficultyLevel.KitchenChaos;
         if (newDifficulty != Difficulty)
         {
             Difficulty = newDifficulty;

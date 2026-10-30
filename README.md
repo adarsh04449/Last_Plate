@@ -1,6 +1,6 @@
 # Last Plate
 
-An original 60-second Unity 6 kitchen-rush arcade game. Catch recipe ingredients in sequence,
+An original two-minute Unity 6 kitchen-rush arcade game. Catch recipe ingredients in sequence,
 manage limited plate-tilt energy, build score multipliers, and survive escalating kitchen chaos.
 
 ## Run it
@@ -38,6 +38,8 @@ uses a four-times-larger texture with a defined rim for cleaner scaling and tilt
 The order ticket uses a fixed-color remaining-time meter that visibly shrinks as customer patience
 runs out.
 The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, and `PlateController`.
+The round lasts 120 seconds, displayed as minutes and seconds. Preparation runs for the first
+40 seconds, Dinner Rush for the next 40, and Kitchen Chaos for the final 40.
 
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.
 See `PLAN.md` for the current development roadmap and the features that are intentionally out of scope.

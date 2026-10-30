@@ -1,7 +1,8 @@
 LAST PLATE — CHANGES FROM THE ORIGINAL DESIGN DOCUMENT
 
 The core concept remains the same: move a chef, catch a three-ingredient recipe in order,
-tilt the plate to avoid hazards, and survive a 60-second rush with three lives.
+tilt the plate to avoid hazards, and survive a kitchen rush with three lives. The round now lasts
+two minutes instead of the original 60 seconds.
 
 Changes made during development:
 
@@ -48,6 +49,9 @@ Changes made during development:
     volume accompany "Sherwood", a quiet CC0 loop by Chris Murphy. Background audio fades with
     the round, lowers under speech, pauses with Escape, and can be toggled with M. Voice lines
     finish naturally before the next one can play.
+17. Extended the round to 120 seconds and spread the three difficulty phases evenly across it:
+    Preparation at 0-40 seconds, Dinner Rush at 40-80, and Kitchen Chaos at 80-120.
+    The timer now displays minutes and seconds, beginning at 2:00.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

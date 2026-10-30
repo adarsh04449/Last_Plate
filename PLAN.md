@@ -28,7 +28,7 @@ The restored prototype already contains:
 - Carry weight that slows the chef.
 - Burnt food hazards and three lives.
 - Golden ingredients, combo scoring, and score multipliers.
-- A 60-second round with Preparation, Dinner Rush, and Kitchen Chaos phases.
+- A two-minute round with Preparation, Dinner Rush, and Kitchen Chaos phases, lasting 40 seconds each.
 - Pause, restart, results rank, and synthesized sound effects.
 
 ## Design Rules

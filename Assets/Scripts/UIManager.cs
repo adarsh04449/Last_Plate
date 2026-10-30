@@ -34,7 +34,8 @@ public class UIManager : MonoBehaviour
         PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
         if (game == null || order == null) return;
 
-        timerText.text = Mathf.CeilToInt(game.TimeRemaining).ToString("00") + "s";
+        int remainingSeconds = Mathf.CeilToInt(game.TimeRemaining);
+        timerText.text = (remainingSeconds / 60) + ":" + (remainingSeconds % 60).ToString("00");
         timerText.color = game.TimeRemaining <= 10f ? new Color(1f, 0.3f, 0.25f) : Color.white;
         scoreText.text = "SCORE  " + game.Score.ToString("0000");
         string comboLabel = game.Combo >= 2 ? "COMBO " + game.Combo + "  x" + game.Multiplier : "BUILD A COMBO";
@@ -105,7 +106,7 @@ public class UIManager : MonoBehaviour
         hud.SetActive(false);
         messageText.color = Color.white;
         messageText.fontSize = 42;
-        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch the three glowing recipe icons IN ORDER\nWrong food stays on the plate — press SPACE to tilt and discard\nBurnt food costs one life • Golden food gives bonus points\n\nA / D or ARROWS to move   •   ESC to pause\nM: music on/off   •   ENTER to start";
+        messageText.text = "LAST PLATE\n\n2-MINUTE KITCHEN RUSH\n\nCatch the three glowing recipe icons IN ORDER\nWrong food stays on the plate — press SPACE to tilt and discard\nBurnt food costs one life • Golden food gives bonus points\n\nA / D or ARROWS to move   •   ESC to pause\nM: music on/off   •   ENTER to start";
     }
 
     public void ShowPlaying() { SetPanels(null); hud.SetActive(true); ClearMessage(); }
