@@ -18,7 +18,8 @@ Changes made during development:
 6. Added an illustrated restaurant-kitchen background, cartoon chef and food artwork,
    a styled order ticket, a tilt meter, stronger color hierarchy, and animated feedback text.
 7. Added separate sounds for normal catches, golden catches, tilting, completed orders,
-   lost lives, phase changes, and the end of the round. Background music remains intentionally absent.
+   lost lives, phase changes, and the end of the round. Later audio polish added a quiet background
+   loop with speech ducking, fades, and a music toggle (see change 16).
 8. Added a results rank (Line Cook, Sous Chef, or Master Chef), final score, orders served,
    and best combo to make repeat attempts more meaningful.
 9. Replaced instant wrong-ingredient damage with a visible three-slot plate inventory. Wrong
@@ -42,6 +43,11 @@ Changes made during development:
     event has two takes, played at the original pitch and speed. Short negative, positive, and
     victory reactions replace the old synthesized phrases. Effects become quieter during speech,
     and priority/cooldown rules prevent overlapping or repeatedly interrupted voices.
+16. Refined the audio toward a peaceful, friendly mood: conversational gasps, "Okay", and "Thank
+    you" takes by cicifyre replace the intense adventurer reactions. Softer effects and lower voice
+    volume accompany "Sherwood", a quiet CC0 loop by Chris Murphy. Background audio fades with
+    the round, lowers under speech, pauses with Escape, and can be toggled with M. Voice lines
+    finish naturally before the next one can play.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure

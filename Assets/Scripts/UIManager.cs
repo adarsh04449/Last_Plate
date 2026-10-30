@@ -105,7 +105,7 @@ public class UIManager : MonoBehaviour
         hud.SetActive(false);
         messageText.color = Color.white;
         messageText.fontSize = 42;
-        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch the three glowing recipe icons IN ORDER\nWrong food stays on the plate — press SPACE to tilt and discard\nBurnt food costs one life • Golden food gives bonus points\n\nA / D or ARROWS to move   •   ESC to pause\nENTER to start";
+        messageText.text = "LAST PLATE\n\n60-SECOND KITCHEN RUSH\n\nCatch the three glowing recipe icons IN ORDER\nWrong food stays on the plate — press SPACE to tilt and discard\nBurnt food costs one life • Golden food gives bonus points\n\nA / D or ARROWS to move   •   ESC to pause\nM: music on/off   •   ENTER to start";
     }
 
     public void ShowPlaying() { SetPanels(null); hud.SetActive(true); ClearMessage(); }

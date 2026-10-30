@@ -122,8 +122,21 @@ public class GameManager : MonoBehaviour
         if (Lives == 0) EndRound();
     }
 
-    public void PauseGame() { State = GameState.Paused; Time.timeScale = 0f; uiManager.ShowPaused(); }
-    public void ResumeGame() { State = GameState.Playing; Time.timeScale = 1f; uiManager.ShowPlaying(); }
+    public void PauseGame()
+    {
+        State = GameState.Paused;
+        Time.timeScale = 0f;
+        FindAnyObjectByType<AudioManager>()?.PausePlayback();
+        uiManager.ShowPaused();
+    }
+
+    public void ResumeGame()
+    {
+        State = GameState.Playing;
+        Time.timeScale = 1f;
+        FindAnyObjectByType<AudioManager>()?.ResumePlayback();
+        uiManager.ShowPlaying();
+    }
 
     public void EndRound()
     {

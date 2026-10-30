@@ -112,20 +112,22 @@ catching ingredients normally.
 Objective: make the game feel finished in the final recording.
 
 - Add distinct catch, wrong catch, tilt, golden, order-complete, life-lost, and phase-change sounds.
-- Add short human voice reactions such as “Oh no!”, “Nice catch!”, and “Order up!”.
+- Use brief, conversational human reactions for burnt food, special catches, and completed orders.
 - Add chef idle, leaning, celebration, and worried animations.
 - Add ingredient trails or small spark effects for golden food.
 - Add a plate shake on wrong catches and a larger celebration on completed orders.
-- Keep background music disabled unless a short, non-looping transition cue improves the game.
+- Keep a quiet, peaceful background loop below gameplay sounds; fade it during speech and at
+  round end. Let players toggle music with M and pause all audio with Escape.
 
 Acceptance test: every important player action has readable visual and audio feedback without sound
 effects becoming repetitive or overwhelming.
 
 Current progress: customer portraits, chef ready/worried/celebration poses, distinct action sounds,
 and human-recorded disappointed, positive, and victory reactions are implemented. The original
-text-to-speech clips have been replaced with CC0 performances by Brandon Song. Each event has two
-takes, and effects become quieter during speech. The voice system uses cooldowns and allows
-damage reactions to interrupt celebratory speech. All five falling-food
+text-to-speech and intense adventurer clips have been replaced with conversational CC0 recordings
+by cicifyre. Each event has two takes, and effects become quieter during speech. Reactions finish
+before another plays. A quiet "Sherwood" loop by Chris Murphy accompanies gameplay with fades,
+speech ducking, and an M-key music toggle. Escape pauses all audio. All five falling-food
 assets now use individual high-resolution transparent sprites, and the plate texture has been
 upgraded for clean scaling.
 
