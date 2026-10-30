@@ -29,11 +29,11 @@ but a few things changed during development.
    went back to one kitchen screen to keep the controls and goal easier to follow.
 
 8. Art was added for the kitchen, chef, food, and customers. The chef changes pose
-   after damage and completed orders. Artwork sources are in ART_CREDITS.txt.
+   after damage and completed orders. Artwork source notes are in README.md.
 
 9. The original plan had no music. The current version has quiet background music
    that gets softer during voice reactions. Music can be switched off with M.
-   The voices and music come from CC0 packs listed in AUDIO_CREDITS.txt.
+   The voices and music come from CC0 packs credited in README.md.
 
 10. The project includes 15 automated gameplay tests and a saved build scene.
     These check issues such as repeated damage, tilt running out, replacement
