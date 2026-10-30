@@ -8,10 +8,8 @@ public class UIManager : MonoBehaviour
     public Image tiltFill, damageFlash, successFlash;
     public Image[] orderIcons, orderFrames;
     public Sprite[] ingredientSprites;
-    public Text[] customerTexts;
-    public Image[] patienceFills;
-    public Image[] customerCardImages;
-    public Image[] customerPortraits;
+    public Text customerText;
+    public Image patienceFill, customerCardImage, customerPortrait;
     public Sprite[] customerSprites;
     public GameObject titlePanel, pausePanel, resultsPanel, hud;
 
@@ -44,34 +42,26 @@ public class UIManager : MonoBehaviour
         levelText.text = DifficultyLabel(game.Difficulty);
         if (tiltFill != null && plate != null)
         {
-            tiltFill.fillAmount = plate.EnergyNormalized;
+            tiltFill.rectTransform.sizeDelta = new Vector2(205f * plate.EnergyNormalized, 20f);
             bool readyToDiscard = inventory != null && inventory.Count > 0 && plate.EnergyNormalized > 0.12f;
-            tiltPromptText.text = readyToDiscard ? "SPACE: TILT + DISCARD" : "HOLD SPACE TO TILT";
+            tiltPromptText.text = plate.TiltEnergy == 0f ? "RELEASE SPACE TO RECHARGE" :
+                readyToDiscard ? "SPACE: TILT + DISCARD" : "HOLD SPACE TO TILT";
             tiltPromptText.color = readyToDiscard ? new Color(0.35f, 1f, 0.65f) : Color.white;
         }
 
-        for (int customerIndex = 0; customerTexts != null && customerIndex < customerTexts.Length; customerIndex++)
+        CustomerTicket ticket = order.CurrentCustomer;
+        customerCardImage.gameObject.SetActive(ticket != null);
+        if (ticket != null)
         {
-            CustomerTicket ticket = order.GetCustomer(customerIndex);
-            bool active = ticket != null;
-            customerTexts[customerIndex].transform.parent.gameObject.SetActive(active);
-            if (!active) continue;
-            if (customerPortraits != null && customerIndex < customerPortraits.Length &&
-                customerSprites != null && (int)ticket.type < customerSprites.Length)
-            {
-                customerPortraits[customerIndex].sprite = customerSprites[(int)ticket.type];
-                customerPortraits[customerIndex].preserveAspect = true;
-            }
-            customerTexts[customerIndex].text = ticket.displayName.ToUpper() + "\n" +
+            customerPortrait.sprite = customerSprites[(int)ticket.type];
+            customerText.text = ticket.displayName.ToUpper() + "\n" +
                 ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
             // Resize the simple image directly so the meter works even without a UI sprite.
             // Its left edge stays fixed while the right edge moves toward zero.
             float patienceRatio = Mathf.Clamp01(ticket.patience / ticket.maxPatience);
-            RectTransform meter = patienceFills[customerIndex].rectTransform;
+            RectTransform meter = patienceFill.rectTransform;
             meter.sizeDelta = new Vector2(300f * patienceRatio, 12f);
             meter.anchoredPosition = new Vector2(-150f + 150f * patienceRatio, 0f);
-            patienceFills[customerIndex].color = new Color(0.15f, 0.82f, 0.68f);
-            customerCardImages[customerIndex].color = customerIndex == order.SelectedIndex ? new Color(1f, 0.78f, 0.25f, 0.98f) : new Color(0.96f, 0.9f, 0.75f, 0.9f);
         }
 
         for (int i = 0; orderIcons != null && i < orderIcons.Length; i++)

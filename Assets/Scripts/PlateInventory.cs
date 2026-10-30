@@ -19,8 +19,6 @@ public class PlateInventory : MonoBehaviour
     public int Count => items.Count;
     public float LoadRatio => maxSlots == 0 ? 0f : items.Count / (float)maxSlots;
     public IReadOnlyList<IngredientType> CurrentTypes => GetTypes();
-    public IngredientType GetTypeAt(int index) => items[index].type;
-    public bool IsGoldenAt(int index) => items[index].golden;
 
     private readonly List<PlateItem> items = new List<PlateItem>();
     private readonly List<IngredientType> typeView = new List<IngredientType>();

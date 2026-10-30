@@ -41,5 +41,21 @@ The main gameplay tuning values are exposed on `GameManager`, `SpawnManager`, an
 The round lasts 120 seconds, displayed as minutes and seconds. Preparation runs for the first
 40 seconds, Dinner Rush for the next 40, and Kitchen Chaos for the final 40.
 
+Holding Space after tilt energy runs out leaves the plate flat; release Space to recharge before
+tilting again. The blue meter shrinks with remaining energy. Each recipe slot awards catch points
+only once per ticket, so discarding and re-catching it cannot farm points or combo credit. If a new
+customer's recipe matches a full plate left from an expired order, that meal is served immediately.
+
+## Test and build
+
+- Open **Window > General > Test Runner**, select **PlayMode**, and run all tests. The 14 gameplay
+  tests cover ordered catches, wrong food, duplicate damage, tilt exhaustion/recharge, meter width,
+  pause/resume, once-per-slot scoring, replacement orders, restart, difficulty, and round ending.
+- `Assets/Scenes/Game.unity` is included in the saved build scene list. Use **File > Build Profiles**
+  to select the desktop target and build the game.
+
+The runtime assembly definition allows the tests to reference game code; the test assembly is
+excluded from normal player builds. No additional testing packages are required.
+
 See `DESIGN_CHANGES.txt` for the required comparison with the original one-page design.
 See `PLAN.md` for the current development roadmap and the features that are intentionally out of scope.

@@ -1,0 +1,6 @@
+{
+    "name": "LastPlate.PlayModeTests",
+    "references": ["LastPlate.Runtime"],
+    "optionalUnityReferences": ["TestAssemblies"],
+    "autoReferenced": false
+}

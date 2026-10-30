@@ -1,0 +1,4 @@
+{
+    "name": "LastPlate.Runtime",
+    "references": ["Unity.ugui"]
+}

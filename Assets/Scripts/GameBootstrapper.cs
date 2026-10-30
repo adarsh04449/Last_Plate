@@ -6,7 +6,6 @@ public class GameBootstrapper : MonoBehaviour
 {
     private static readonly Color Navy = new Color(0.035f, 0.075f, 0.12f);
     private static readonly Color Cream = new Color(1f, 0.91f, 0.72f);
-    private static readonly Color Orange = new Color(1f, 0.42f, 0.12f);
 
     private void Awake()
     {
@@ -106,27 +105,17 @@ public class GameBootstrapper : MonoBehaviour
 
         GameObject hud = MakeUIObject("HUD", canvasObject.transform);
         GameObject topBar = MakePanel("TopBar", hud.transform, new Color(0.025f, 0.055f, 0.09f, 0.94f), new Vector2(0f, 315f), new Vector2(1280f, 90f));
-        Text timer = MakeText(topBar.transform, "60s", new Vector2(-540f, 0f), new Vector2(150f, 70f), 36, Color.white, TextAnchor.MiddleLeft);
+        Text timer = MakeText(topBar.transform, "2:00", new Vector2(-540f, 0f), new Vector2(150f, 70f), 36, Color.white, TextAnchor.MiddleLeft);
         Text lives = MakeText(topBar.transform, "♥♥♥", new Vector2(-355f, 0f), new Vector2(190f, 70f), 32, new Color(1f, 0.3f, 0.32f), TextAnchor.MiddleCenter);
         Text level = MakeText(topBar.transform, "PREPARATION", Vector2.zero, new Vector2(320f, 70f), 24, Cream, TextAnchor.MiddleCenter);
         Text score = MakeText(topBar.transform, "SCORE  0000", new Vector2(485f, 0f), new Vector2(260f, 70f), 30, Color.white, TextAnchor.MiddleRight);
 
-        Text[] customerTexts = new Text[3];
-        Image[] patienceFills = new Image[3];
-        Image[] customerCardImages = new Image[3];
-        Image[] customerPortraits = new Image[3];
         Sprite[] customerSprites = SliceHorizontal(Resources.Load<Texture2D>("Art/customer_portraits"), 3, 300f);
-        for (int i = 0; i < 3; i++)
-        {
-            float cardX = i == 0 ? 0f : (i == 1 ? 390f : -390f);
-            GameObject card = MakePanel("CustomerTicket" + (i + 1), hud.transform, new Color(0.96f, 0.9f, 0.75f, 0.92f), new Vector2(cardX, 200f), new Vector2(350f, 120f));
-            customerCardImages[i] = card.GetComponent<Image>();
-            customerPortraits[i] = MakeSpriteImage("CustomerPortrait", card.transform, customerSprites[0], new Vector2(-128f, 5f), new Vector2(78f, 86f));
-            customerTexts[i] = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(37f, 9f), new Vector2(245f, 88f), 16, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
-            GameObject patienceBack = MakePanel("PatienceMeter", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.9f), new Vector2(0f, -47f), new Vector2(310f, 20f));
-            GameObject patience = MakePanel("RemainingTime", patienceBack.transform, new Color(0.15f, 0.82f, 0.68f), Vector2.zero, new Vector2(300f, 12f));
-            patienceFills[i] = patience.GetComponent<Image>();
-        }
+        GameObject card = MakePanel("CustomerTicket", hud.transform, new Color(1f, 0.78f, 0.25f, 0.98f), new Vector2(0f, 200f), new Vector2(350f, 120f));
+        Image customerPortrait = MakeSpriteImage("CustomerPortrait", card.transform, customerSprites[0], new Vector2(-128f, 5f), new Vector2(78f, 86f));
+        Text customerText = MakeText(card.transform, "WAITING FOR CUSTOMER", new Vector2(37f, 9f), new Vector2(245f, 88f), 16, new Color(0.16f, 0.075f, 0.035f), TextAnchor.MiddleCenter);
+        GameObject patienceBack = MakePanel("PatienceMeter", card.transform, new Color(0.18f, 0.1f, 0.07f, 0.9f), new Vector2(0f, -47f), new Vector2(310f, 20f));
+        Image patienceFill = MakePanel("RemainingTime", patienceBack.transform, new Color(0.15f, 0.82f, 0.68f), Vector2.zero, new Vector2(300f, 12f)).GetComponent<Image>();
         Image[] orderFrames = new Image[3];
         Image[] orderIcons = new Image[3];
         for (int i = 0; i < 3; i++)
@@ -141,7 +130,9 @@ public class GameBootstrapper : MonoBehaviour
         GameObject energyBack = MakePanel("TiltEnergy", hud.transform, new Color(0.02f, 0.05f, 0.08f, 0.9f), new Vector2(-455f, -300f), new Vector2(310f, 52f));
         MakeText(energyBack.transform, "TILT", new Vector2(-112f, 0f), new Vector2(70f, 45f), 19, Color.white, TextAnchor.MiddleCenter);
         GameObject fillObject = MakePanel("Fill", energyBack.transform, new Color(0.1f, 0.82f, 1f, 1f), new Vector2(36f, 0f), new Vector2(205f, 20f));
-        Image tiltFill = fillObject.GetComponent<Image>(); tiltFill.type = Image.Type.Filled; tiltFill.fillMethod = Image.FillMethod.Horizontal; tiltFill.fillOrigin = 0;
+        Image tiltFill = fillObject.GetComponent<Image>();
+        tiltFill.rectTransform.pivot = new Vector2(0f, 0.5f);
+        tiltFill.rectTransform.anchoredPosition = new Vector2(-66.5f, 0f);
         Text tiltPrompt = MakeText(hud.transform, "HOLD SPACE TO TILT", new Vector2(-455f, -263f), new Vector2(320f, 34f), 14, Color.white, TextAnchor.MiddleCenter);
 
         GameObject titlePanel = MakeFullPanel("TitlePanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.88f));
@@ -155,8 +146,8 @@ public class GameBootstrapper : MonoBehaviour
         ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltPromptText = tiltPrompt; ui.tiltFill = tiltFill;
         ui.orderIcons = orderIcons; ui.orderFrames = orderFrames; ui.ingredientSprites = foodSprites;
         ui.damageFlash = damageFlash; ui.successFlash = successFlash;
-        ui.customerTexts = customerTexts; ui.patienceFills = patienceFills; ui.customerCardImages = customerCardImages;
-        ui.customerPortraits = customerPortraits; ui.customerSprites = customerSprites;
+        ui.customerText = customerText; ui.patienceFill = patienceFill; ui.customerCardImage = card.GetComponent<Image>();
+        ui.customerPortrait = customerPortrait; ui.customerSprites = customerSprites;
         ui.titlePanel = titlePanel; ui.pausePanel = pausePanel; ui.resultsPanel = resultsPanel; ui.hud = hud;
     }
 

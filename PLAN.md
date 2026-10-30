@@ -144,11 +144,20 @@ Objective: make the game easy to grade and easy to replay.
 
 ## Testing Checklist
 
+Automated coverage: 14 committed PlayMode tests under `Assets/Tests/PlayMode` exercise the core
+gameplay rules. The audit fixes also replaced the hidden extra customer cards with one ticket,
+fixed the tilt meter, require Space release for recharge, prevent repeated slot rewards, and
+serve matching retained plates when a replacement order arrives. The game scene is included in
+the saved build configuration.
+
 - Chef stays inside the screen.
 - A/D and arrow keys both work.
 - Correct ingredients advance only the intended order slot.
 - Wrong ingredients do not create duplicate penalties.
 - Tilt prevents catches while active and discards only the intended item.
+- Holding Space at zero energy does not reactivate tilt; releasing Space recharges it.
+- Re-catching a scored recipe slot does not award more points or combo credit on the same ticket.
+- A replacement order matching the full retained plate serves immediately.
 - Plate-full feedback is clear.
 - Wrong ingredients do not remove lives; they occupy plate space and can be discarded with tilt.
 - Burnt food removes exactly one life and cannot remove more than one life per item.

@@ -18,13 +18,11 @@ public sealed class CustomerTicket
 public class OrderManager : MonoBehaviour
 {
     public int Progress { get; private set; }
-    public int SelectedIndex { get; private set; }
-    public int CustomerCount => customers.Count;
-    public IngredientType[] CurrentOrder => customers.Count == 0 ? fallbackOrder : customers[SelectedIndex].ingredients;
-    public string RecipeName => customers.Count == 0 ? "Garden Stack" : customers[SelectedIndex].recipeName;
+    public CustomerTicket CurrentCustomer { get; private set; }
+    public IngredientType[] CurrentOrder => CurrentCustomer == null ? fallbackOrder : CurrentCustomer.ingredients;
     public IngredientType NextRequired => CurrentOrder[Mathf.Clamp(Progress, 0, CurrentOrder.Length - 1)];
 
-    private readonly List<CustomerTicket> customers = new List<CustomerTicket>();
+    private readonly bool[] rewardedSlots = new bool[3];
     private readonly IngredientType[] fallbackOrder = { IngredientType.Tomato, IngredientType.Cheese, IngredientType.Lettuce };
     private readonly IngredientType[][] recipes = {
         new[] { IngredientType.Tomato, IngredientType.Cheese, IngredientType.Lettuce },
@@ -38,36 +36,34 @@ public class OrderManager : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;
-        // One active ticket keeps the order readable during the fast catching round.
-        EnsureCustomerCount(1);
-
-        for (int i = customers.Count - 1; i >= 0; i--)
-        {
-            customers[i].patience -= Time.deltaTime;
-            if (customers[i].patience <= 0f) ExpireCustomer(i);
-        }
+        if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing || CurrentCustomer == null) return;
+        CurrentCustomer.patience -= Time.deltaTime;
+        if (CurrentCustomer.patience <= 0f) ExpireCustomer();
     }
-
-    public CustomerTicket GetCustomer(int index) => index >= 0 && index < customers.Count ? customers[index] : null;
 
     public void CreateNewOrder()
     {
-        customers.Clear();
-        SelectedIndex = 0;
+        CurrentCustomer = BuildCustomer();
+        System.Array.Clear(rewardedSlots, 0, rewardedSlots.Length);
         Progress = 0;
-        EnsureCustomerCount(1);
         FindAnyObjectByType<UIManager>()?.Refresh();
     }
 
     public bool ProcessPlateCatch(IReadOnlyList<IngredientType> plate, bool golden)
     {
-        if (GameManager.Instance.State != GameState.Playing || customers.Count == 0) return false;
+        if (GameManager.Instance.State != GameState.Playing || CurrentCustomer == null || plate.Count == 0) return false;
         SyncPlate(plate);
         if (Progress == plate.Count)
         {
-            GameManager.Instance.RegisterCorrectIngredient(golden);
-            FindAnyObjectByType<AudioManager>().PlayCatch(golden);
+            int slot = plate.Count - 1;
+            bool newlyRewarded = !rewardedSlots[slot];
+            if (newlyRewarded)
+            {
+                rewardedSlots[slot] = true;
+                GameManager.Instance.RegisterCorrectIngredient(golden);
+            }
+            else FindAnyObjectByType<UIManager>().ShowCatchFeedback("GOOD CATCH", false);
+            FindAnyObjectByType<AudioManager>().PlayCatch(golden && newlyRewarded);
         }
         else
         {
@@ -76,12 +72,7 @@ public class OrderManager : MonoBehaviour
             FindAnyObjectByType<AudioManager>().PlayWrongIngredient();
         }
 
-        if (Progress >= CurrentOrder.Length && plate.Count == CurrentOrder.Length)
-        {
-            GameManager.Instance.AddCompletedOrder(customers[SelectedIndex].rewardBonus);
-            ReplaceCustomer(SelectedIndex);
-            return true;
-        }
+        if (TryCompleteOrder(plate.Count)) return true;
         FindAnyObjectByType<UIManager>().Refresh();
         return false;
     }
@@ -92,12 +83,6 @@ public class OrderManager : MonoBehaviour
         int count = Mathf.Min(plate.Count, CurrentOrder.Length);
         while (Progress < count && plate[Progress] == CurrentOrder[Progress]) Progress++;
         FindAnyObjectByType<UIManager>()?.Refresh();
-    }
-
-    private void EnsureCustomerCount(int target)
-    {
-        while (customers.Count < target) customers.Add(BuildCustomer());
-        SelectedIndex = Mathf.Clamp(SelectedIndex, 0, customers.Count - 1);
     }
 
     private CustomerTicket BuildCustomer()
@@ -120,24 +105,23 @@ public class OrderManager : MonoBehaviour
         };
     }
 
-    private void ReplaceCustomer(int index)
+    private bool TryCompleteOrder(int plateCount)
     {
-        customers[index] = BuildCustomer();
-        Progress = 0;
-        FindAnyObjectByType<UIManager>().Refresh();
+        if (Progress != CurrentOrder.Length || plateCount != CurrentOrder.Length) return false;
+        GameManager.Instance.AddCompletedOrder(CurrentCustomer.rewardBonus);
+        CreateNewOrder();
+        return true;
     }
 
-    private void ExpireCustomer(int index)
+    private void ExpireCustomer()
     {
-        bool selectedExpired = index == SelectedIndex;
-        customers[index] = BuildCustomer();
+        CreateNewOrder();
         // Burnt food is the only life-losing hazard for now; patience only replaces the order.
         FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("CUSTOMER LEFT — NEW ORDER", false);
-        if (selectedExpired)
-        {
-            PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
-            SyncPlate(inventory == null ? new IngredientType[0] : inventory.CurrentTypes);
-        }
+        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
+        if (inventory == null) return;
+        SyncPlate(inventory.CurrentTypes);
+        if (TryCompleteOrder(inventory.Count)) inventory.Clear();
     }
 
 }

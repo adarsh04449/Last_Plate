@@ -1,5 +1,7 @@
 using UnityEngine;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("LastPlate.PlayModeTests")]
+
 /// <summary>The plate can phase out catches while tilted, but only while energy remains.</summary>
 public class PlateController : MonoBehaviour
 {
@@ -12,7 +14,6 @@ public class PlateController : MonoBehaviour
     public float EnergyNormalized => TiltEnergy / maxTiltEnergy;
 
     private SpriteRenderer spriteRenderer;
-    private bool wasTilted;
 
     private void Awake()
     {
@@ -22,22 +23,35 @@ public class PlateController : MonoBehaviour
 
     private void Update()
     {
-        bool playing = GameManager.Instance != null && GameManager.Instance.State == GameState.Playing;
-        IsTilted = playing && Input.GetKey(KeyCode.Space) && TiltEnergy > 0.03f;
-        TiltEnergy = Mathf.Clamp(TiltEnergy + (IsTilted ? -1f : rechargePerSecond) * Time.deltaTime, 0f, maxTiltEnergy);
+        if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;
+        AdvanceTilt(Input.GetKey(KeyCode.Space), Time.deltaTime);
+    }
 
+    internal void AdvanceTilt(bool held, float deltaTime)
+    {
+        bool wasTilted = IsTilted;
+        IsTilted = held && TiltEnergy > 0f;
         if (IsTilted && !wasTilted)
         {
             FindAnyObjectByType<AudioManager>().PlayTilt();
             GetComponent<PlateInventory>().DiscardLast();
         }
-        wasTilted = IsTilted;
+        // Holding an empty plate must not recharge it and repeatedly restart tilt.
+        TiltEnergy = Mathf.Clamp(TiltEnergy + (held ? -1f : rechargePerSecond) * deltaTime, 0f, maxTiltEnergy);
+        if (TiltEnergy == 0f) IsTilted = false;
         if (tiltedSprite != null && flatSprite != null) spriteRenderer.sprite = IsTilted ? tiltedSprite : flatSprite;
         spriteRenderer.color = IsTilted ? new Color(0.55f, 0.9f, 1f) : Color.white;
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(0f, 0f, IsTilted ? -22f : 0f), 18f * Time.deltaTime);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(0f, 0f, IsTilted ? -22f : 0f), 18f * deltaTime);
     }
 
-    public void ResetEnergy() { TiltEnergy = maxTiltEnergy; }
+    public void ResetEnergy()
+    {
+        TiltEnergy = maxTiltEnergy;
+        IsTilted = false;
+        transform.localRotation = Quaternion.identity;
+        spriteRenderer.sprite = flatSprite;
+        spriteRenderer.color = Color.white;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

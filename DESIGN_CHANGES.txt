@@ -52,6 +52,12 @@ Changes made during development:
 17. Extended the round to 120 seconds and spread the three difficulty phases evenly across it:
     Preparation at 0-40 seconds, Dinner Rush at 40-80, and Kitchen Chaos at 80-120.
     The timer now displays minutes and seconds, beginning at 2:00.
+18. Fixed tilt exhaustion so a held Space key cannot rapidly reactivate protection or discard
+    multiple items. Energy recharges only after release, and the blue meter now visibly shrinks.
+19. Each recipe slot pays catch points and combo credit only once per ticket. Matching retained
+    food can complete a replacement order immediately instead of leaving a full plate stuck.
+20. Simplified customer handling to one ticket and one card, added the game scene to the build
+    configuration, and committed 14 automated gameplay tests using Unity's existing test framework.
 
 These changes move the project away from a basic falling-object clone by making recipe order,
 resource management, target selection, risk/reward scoring, and escalating kitchen pressure
