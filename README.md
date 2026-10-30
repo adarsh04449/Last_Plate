@@ -37,41 +37,9 @@ recipe completely, the order is served right away.
 
 The round ends when the timer reaches zero or all three lives are lost.
 
-## Testing and building
-
-Open **Window > General > Test Runner**, select **PlayMode**, and run the tests.
-There are 15 tests for catching, scoring, tilt, orders, the UI, pause, restart, and timing.
-
-For a desktop build, open **File > Build Profiles** and choose the target platform.
-The Game scene is already in the build list.
-
 ## Project notes
 
 - `Assets/Scripts/`: game code.
 - `Assets/Resources/`: art and audio.
 - `Assets/Tests/PlayMode/`: gameplay tests.
 - `DESIGN_CHANGES.txt`: changes from the original one-page design.
-
-## Audio credits
-
-Voice reactions are by [cicifyre](https://cicifyre.itch.io/), from the
-[Free Voice Clips Pack - Bright Female](https://opengameart.org/content/voice-clip-packs-for-visual-novels-and-rpgs).
-The background track is [Sherwood](https://opengameart.org/content/sherwood) by
-Chris Murphy (zesona). Both packs use the
-[CC0 1.0 license](https://creativecommons.org/publicdomain/zero/1.0/).
-
-The source clips were renamed for the game:
-
-```text
-01-anime gasp.wav -> chef_damage_01.wav
-02-anime gasp.wav -> chef_damage_02.wav
-01-okay.wav       -> chef_golden_01.wav
-02-okay.wav       -> chef_golden_02.wav
-01-thank you.wav  -> chef_complete_01.wav
-02-thank you.wav  -> chef_complete_02.wav
-sherwood_0.ogg    -> peaceful_kitchen.ogg
-```
-
-Voices are imported as mono and play at their original speed and pitch. Each
-reaction has two takes to reduce repetition. The music plays quietly and lowers
-during speech. Other sound effects are generated in `AudioManager.cs`.
