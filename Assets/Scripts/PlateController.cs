@@ -2,7 +2,6 @@ using UnityEngine;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("LastPlate.PlayModeTests")]
 
-/// <summary>The plate can phase out catches while tilted, but only while energy remains.</summary>
 public class PlateController : MonoBehaviour
 {
     public Sprite flatSprite;
@@ -14,11 +13,19 @@ public class PlateController : MonoBehaviour
     public float EnergyNormalized => TiltEnergy / maxTiltEnergy;
 
     private SpriteRenderer spriteRenderer;
+    private PlateInventory inventory;
+    private AudioManager audioManager;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         TiltEnergy = maxTiltEnergy;
+    }
+
+    private void Start()
+    {
+        inventory = GetComponent<PlateInventory>();
+        audioManager = FindAnyObjectByType<AudioManager>();
     }
 
     private void Update()
@@ -33,8 +40,8 @@ public class PlateController : MonoBehaviour
         IsTilted = held && TiltEnergy > 0f;
         if (IsTilted && !wasTilted)
         {
-            FindAnyObjectByType<AudioManager>().PlayTilt();
-            GetComponent<PlateInventory>().DiscardLast();
+            audioManager.PlayTilt();
+            inventory.DiscardLast();
         }
         // Holding an empty plate must not recharge it and repeatedly restart tilt.
         TiltEnergy = Mathf.Clamp(TiltEnergy + (held ? -1f : rechargePerSecond) * deltaTime, 0f, maxTiltEnergy);

@@ -3,7 +3,6 @@ using UnityEngine;
 public enum GameState { Title, Playing, Paused, Results }
 public enum DifficultyLevel { Preparation, DinnerRush, KitchenChaos }
 
-/// <summary>Owns round state and scoring. Other systems report events here.</summary>
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
@@ -25,18 +24,26 @@ public class GameManager : MonoBehaviour
     private OrderManager orderManager;
     private SpawnManager spawnManager;
     private UIManager uiManager;
+    private AudioManager audioManager;
+    private ChefReactionController chefReactions;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
     private void Start()
     {
-        orderManager = FindAnyObjectByType<OrderManager>();
-        spawnManager = FindAnyObjectByType<SpawnManager>();
-        uiManager = FindAnyObjectByType<UIManager>();
+        orderManager = GetComponent<OrderManager>();
+        spawnManager = GetComponent<SpawnManager>();
+        uiManager = GetComponent<UIManager>();
+        audioManager = GetComponent<AudioManager>();
+        chefReactions = FindAnyObjectByType<ChefReactionController>();
         Time.timeScale = 1f;
         ShowTitle();
     }
@@ -61,24 +68,24 @@ public class GameManager : MonoBehaviour
         {
             Difficulty = newDifficulty;
             uiManager.ShowDifficulty(Difficulty);
-            FindAnyObjectByType<AudioManager>().PlayLevelUp();
+            audioManager.PlayLevelUp();
+            spawnManager.SetDifficulty(Difficulty);
         }
-        spawnManager.SetDifficulty(Difficulty);
         uiManager.Refresh();
         if (TimeRemaining <= 0f) EndRound();
     }
 
     public void StartRound()
     {
-        CancelInvoke();
         Time.timeScale = 1f;
         State = GameState.Playing;
-        FindAnyObjectByType<AudioManager>()?.ResetPlayback();
+        audioManager.ResetPlayback();
         TimeRemaining = roundDuration;
         Lives = startingLives;
         Score = CompletedOrders = Combo = BestCombo = 0;
         Difficulty = DifficultyLevel.Preparation;
-        FindAnyObjectByType<ChefReactionController>()?.ResetPose();
+        chefReactions.ResetPose();
+        spawnManager.SetDifficulty(Difficulty);
         orderManager.CreateNewOrder();
         spawnManager.ResetSpawner();
         uiManager.ShowPlaying();
@@ -101,8 +108,8 @@ public class GameManager : MonoBehaviour
         int points = (100 + customerBonus) * Multiplier;
         Score += points;
         uiManager.ShowOrderComplete(points);
-        FindAnyObjectByType<ChefReactionController>()?.ShowCelebration();
-        FindAnyObjectByType<AudioManager>().PlayOrderComplete();
+        chefReactions.ShowCelebration();
+        audioManager.PlayOrderComplete();
     }
 
     public void BreakCombo()
@@ -117,7 +124,7 @@ public class GameManager : MonoBehaviour
         Combo = 0;
         Lives = Mathf.Max(0, Lives - 1);
         uiManager.ShowDamageFlash();
-        FindAnyObjectByType<ChefReactionController>()?.ShowWorried();
+        chefReactions.ShowWorried();
         uiManager.ShowCatchFeedback(feedback, false);
         uiManager.Refresh();
         if (Lives == 0) EndRound();
@@ -127,7 +134,7 @@ public class GameManager : MonoBehaviour
     {
         State = GameState.Paused;
         Time.timeScale = 0f;
-        FindAnyObjectByType<AudioManager>()?.PausePlayback();
+        audioManager.PausePlayback();
         uiManager.ShowPaused();
     }
 
@@ -135,7 +142,7 @@ public class GameManager : MonoBehaviour
     {
         State = GameState.Playing;
         Time.timeScale = 1f;
-        FindAnyObjectByType<AudioManager>()?.ResumePlayback();
+        audioManager.ResumePlayback();
         uiManager.ShowPlaying();
     }
 
@@ -148,5 +155,10 @@ public class GameManager : MonoBehaviour
         uiManager.ShowResults();
     }
 
-    private void ShowTitle() { State = GameState.Title; Time.timeScale = 1f; uiManager.ShowTitle(); }
+    private void ShowTitle()
+    {
+        State = GameState.Title;
+        Time.timeScale = 1f;
+        uiManager.ShowTitle();
+    }
 }

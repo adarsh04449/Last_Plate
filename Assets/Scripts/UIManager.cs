@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Formats the arcade HUD and all menu/feedback states.</summary>
 public class UIManager : MonoBehaviour
 {
     public Text timerText, scoreText, livesText, orderText, comboText, levelText, messageText, tiltPromptText;
@@ -15,6 +14,21 @@ public class UIManager : MonoBehaviour
 
     private float damageFlashStrength;
     private float successFlashStrength;
+    private GameManager game;
+    private OrderManager order;
+    private PlateController plate;
+    private PlateInventory inventory;
+    private AudioManager audioManager;
+    private CustomerTicket displayedCustomer;
+
+    private void Awake()
+    {
+        game = GetComponent<GameManager>();
+        order = GetComponent<OrderManager>();
+        audioManager = GetComponent<AudioManager>();
+        plate = FindAnyObjectByType<PlateController>();
+        inventory = FindAnyObjectByType<PlateInventory>();
+    }
 
     private void Update()
     {
@@ -26,18 +40,13 @@ public class UIManager : MonoBehaviour
 
     public void Refresh()
     {
-        GameManager game = GameManager.Instance;
-        OrderManager order = FindAnyObjectByType<OrderManager>();
-        PlateController plate = FindAnyObjectByType<PlateController>();
-        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
         if (game == null || order == null) return;
 
         int remainingSeconds = Mathf.CeilToInt(game.TimeRemaining);
         timerText.text = (remainingSeconds / 60) + ":" + (remainingSeconds % 60).ToString("00");
         timerText.color = game.TimeRemaining <= 10f ? new Color(1f, 0.3f, 0.25f) : Color.white;
         scoreText.text = "SCORE  " + game.Score.ToString("0000");
-        string comboLabel = game.Combo >= 2 ? "COMBO " + game.Combo + "  x" + game.Multiplier : "BUILD A COMBO";
-        comboText.text = comboLabel;
+        comboText.text = game.Combo >= 2 ? "COMBO " + game.Combo + "  x" + game.Multiplier : "BUILD A COMBO";
         livesText.text = new string('♥', game.Lives) + new string('♡', 3 - game.Lives);
         levelText.text = DifficultyLabel(game.Difficulty);
         if (tiltFill != null && plate != null)
@@ -53,11 +62,14 @@ public class UIManager : MonoBehaviour
         customerCardImage.gameObject.SetActive(ticket != null);
         if (ticket != null)
         {
-            customerPortrait.sprite = customerSprites[(int)ticket.type];
-            customerText.text = ticket.displayName.ToUpper() + "\n" +
-                ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
-            // Resize the simple image directly so the meter works even without a UI sprite.
-            // Its left edge stays fixed while the right edge moves toward zero.
+            if (ticket != displayedCustomer)
+            {
+                customerPortrait.sprite = customerSprites[(int)ticket.type];
+                customerText.text = ticket.displayName.ToUpper() + "\n" +
+                    ticket.recipeName.ToUpper() + "\n" + RecipeLine(ticket.ingredients);
+                displayedCustomer = ticket;
+            }
+            // Keep the left edge fixed as the remaining time gets shorter.
             float patienceRatio = Mathf.Clamp01(ticket.patience / ticket.maxPatience);
             RectTransform meter = patienceFill.rectTransform;
             meter.sizeDelta = new Vector2(300f * patienceRatio, 12f);
@@ -99,27 +111,36 @@ public class UIManager : MonoBehaviour
         messageText.text = "LAST PLATE\n\n2-MINUTE KITCHEN RUSH\n\nCatch the three glowing recipe icons IN ORDER\nWrong food stays on the plate — press SPACE to tilt and discard\nBurnt food costs one life • Golden food gives bonus points\n\nA / D or ARROWS to move   •   ESC to pause\nM: music on/off   •   ENTER to start";
     }
 
-    public void ShowPlaying() { SetPanels(null); hud.SetActive(true); ClearMessage(); }
+    public void ShowPlaying()
+    {
+        SetPanels(null);
+        hud.SetActive(true);
+        ClearMessage();
+    }
 
     public void ShowPaused()
     {
-        SetPanels(pausePanel); hud.SetActive(false); messageText.color = Color.white; messageText.fontSize = 44;
+        SetPanels(pausePanel);
+        hud.SetActive(false);
+        messageText.color = Color.white;
+        messageText.fontSize = 44;
         messageText.text = "KITCHEN PAUSED\n\nPress ESCAPE to resume";
     }
 
     public void ShowResults()
     {
-        SetPanels(resultsPanel); hud.SetActive(false);
-        GameManager game = GameManager.Instance;
+        SetPanels(resultsPanel);
+        hud.SetActive(false);
         string rank = game.Score >= 1800 ? "MASTER CHEF" : game.Score >= 900 ? "SOUS CHEF" : "LINE COOK";
-        messageText.color = new Color(1f, 0.88f, 0.35f); messageText.fontSize = 42;
+        messageText.color = new Color(1f, 0.88f, 0.35f);
+        messageText.fontSize = 42;
         messageText.text = "RUSH COMPLETE\n" + rank + "\n\nSCORE  " + game.Score + "\nORDERS  " + game.CompletedOrders + "\nBEST COMBO  " + game.BestCombo + "\n\nPress ENTER to play again";
-        FindAnyObjectByType<AudioManager>().PlayRoundFinished();
+        audioManager.PlayRoundFinished();
     }
 
     public void ShowCatchFeedback(string text, bool golden)
     {
-        if (GameManager.Instance.State != GameState.Playing) return;
+        if (game.State != GameState.Playing) return;
         CancelInvoke(nameof(ClearMessage));
         messageText.fontSize = golden ? 38 : 30;
         messageText.color = golden ? new Color(1f, 0.8f, 0.1f) : Color.white;
@@ -131,28 +152,38 @@ public class UIManager : MonoBehaviour
     {
         CancelInvoke(nameof(ClearMessage));
         successFlashStrength = 1f;
-        messageText.fontSize = 40; messageText.color = new Color(0.35f, 1f, 0.55f);
+        messageText.fontSize = 40;
+        messageText.color = new Color(0.35f, 1f, 0.55f);
         messageText.text = "ORDER SERVED!  +" + points;
         Invoke(nameof(ClearMessage), 1f);
     }
 
-    public void ShowDamageFlash() { damageFlashStrength = 1f; }
+    public void ShowDamageFlash()
+    {
+        damageFlashStrength = 1f;
+    }
 
     public void ShowDifficulty(DifficultyLevel level)
     {
-        if (GameManager.Instance.State != GameState.Playing) return;
+        if (game.State != GameState.Playing) return;
         CancelInvoke(nameof(ClearMessage));
-        messageText.fontSize = 34; messageText.color = new Color(1f, 0.65f, 0.2f);
+        messageText.fontSize = 34;
+        messageText.color = new Color(1f, 0.65f, 0.2f);
         messageText.text = DifficultyLabel(level);
         Invoke(nameof(ClearMessage), 1.2f);
     }
 
     private void SetPanels(GameObject active)
     {
-        titlePanel.SetActive(active == titlePanel); pausePanel.SetActive(active == pausePanel); resultsPanel.SetActive(active == resultsPanel);
+        titlePanel.SetActive(active == titlePanel);
+        pausePanel.SetActive(active == pausePanel);
+        resultsPanel.SetActive(active == resultsPanel);
     }
 
-    private void ClearMessage() { if (GameManager.Instance != null && GameManager.Instance.State == GameState.Playing) messageText.text = ""; }
+    private void ClearMessage()
+    {
+        if (game != null && game.State == GameState.Playing) messageText.text = "";
+    }
 
     private static string DifficultyLabel(DifficultyLevel level)
     {

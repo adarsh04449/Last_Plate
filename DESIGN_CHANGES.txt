@@ -1,64 +1,40 @@
-LAST PLATE — CHANGES FROM THE ORIGINAL DESIGN DOCUMENT
+Last Plate - Changes from the original design
 
-The core concept remains the same: move a chef, catch a three-ingredient recipe in order,
-tilt the plate to avoid hazards, and survive a kitchen rush with three lives. The round now lasts
-two minutes instead of the original 60 seconds.
+The original plan was a 60-second game where wrong ingredients cost a life.
+The main idea is still catching a three-ingredient recipe and tilting the plate,
+but a few things changed during development.
 
-Changes made during development:
+1. The round is now two minutes long. Each difficulty stage lasts 40 seconds,
+   giving the player more time to learn the controls before Kitchen Chaos.
 
-1. Added named, predefined recipes instead of fully random orders. This gives each order
-   more personality and prevents repetitive or confusing combinations.
-2. Added target-aware spawning. The next required ingredient is guaranteed to appear
-   regularly, so success depends on movement and timing instead of unlucky randomness.
-3. Plate tilting now uses a rechargeable energy meter. This makes tilting a limited tactical
-   resource rather than an unlimited way to ignore every dangerous item.
-4. Added score, catch combos, score multipliers, and rare golden ingredients. Correct play
-   is now rewarded beyond the original one-point-per-order system.
-5. Added distinct named phases, transition announcements, faster difficulty scaling, wobbling
-   ingredients, and more burnt food during Kitchen Chaos.
-6. Added an illustrated restaurant-kitchen background, cartoon chef and food artwork,
-   a styled order ticket, a tilt meter, stronger color hierarchy, and animated feedback text.
-7. Added separate sounds for normal catches, golden catches, tilting, completed orders,
-   lost lives, phase changes, and the end of the round. Later audio polish added a quiet background
-   loop with speech ducking, fades, and a music toggle (see change 16).
-8. Added a results rank (Line Cook, Sous Chef, or Master Chef), final score, orders served,
-   and best combo to make repeat attempts more meaningful.
-9. Replaced instant wrong-ingredient damage with a visible three-slot plate inventory. Wrong
-   ingredients occupy space and must be intentionally discarded by tilting; carrying more food
-   also slows the chef. Burnt food remains immediately dangerous.
-10. Replaced the single anonymous order with a named customer ticket and patience system. Only
-    one order is shown at a time so the player can focus on catching and preparing it; Dinner Rush
-    and Kitchen Chaos increase pressure through faster timing and more demanding customer types.
-11. Improved first-play clarity with large recipe icons, a pulsing next-ingredient highlight,
-    a visible ingredient stack on the chef's plate, tilt-ready guidance, distinct wrong-catch audio,
-    and stronger damage and order-completion flashes. Burnt food remains the only source of life loss.
-12. Added original customer portrait artwork, three expressive chef poses, and short spoken chef
-    reactions for burnt food, golden catches, and completed orders. Voice cooldowns keep these
-    reactions readable without overwhelming the arcade sound effects.
-13. Replaced the smaller combined food sheet during gameplay with individual high-resolution,
-    transparent ingredient sprites. The procedural plate was also increased from 128x32 to
-    512x128 pixels with a cleaner rim and distinct tilted coloring.
-14. Replaced the customer timer's late green-to-red color change with a larger fixed-color meter
-    that physically shrinks from right to left, making remaining recipe time easier to judge.
-15. Replaced robotic text-to-speech with human-recorded CC0 reactions by Brandon Song. Each
-    event has two takes, played at the original pitch and speed. Short negative, positive, and
-    victory reactions replace the old synthesized phrases. Effects become quieter during speech,
-    and priority/cooldown rules prevent overlapping or repeatedly interrupted voices.
-16. Refined the audio toward a peaceful, friendly mood: conversational gasps, "Okay", and "Thank
-    you" takes by cicifyre replace the intense adventurer reactions. Softer effects and lower voice
-    volume accompany "Sherwood", a quiet CC0 loop by Chris Murphy. Background audio fades with
-    the round, lowers under speech, pauses with Escape, and can be toggled with M. Voice lines
-    finish naturally before the next one can play.
-17. Extended the round to 120 seconds and spread the three difficulty phases evenly across it:
-    Preparation at 0-40 seconds, Dinner Rush at 40-80, and Kitchen Chaos at 80-120.
-    The timer now displays minutes and seconds, beginning at 2:00.
-18. Fixed tilt exhaustion so a held Space key cannot rapidly reactivate protection or discard
-    multiple items. Energy recharges only after release, and the blue meter now visibly shrinks.
-19. Each recipe slot pays catch points and combo credit only once per ticket. Matching retained
-    food can complete a replacement order immediately instead of leaving a full plate stuck.
-20. Simplified customer handling to one ticket and one card, added the game scene to the build
-    configuration, and committed 14 automated gameplay tests using Unity's existing test framework.
+2. Only burnt food removes lives. Wrong ingredients stay on the plate and can be
+   discarded with Space. This makes mistakes recoverable.
 
-These changes move the project away from a basic falling-object clone by making recipe order,
-resource management, target selection, risk/reward scoring, and escalating kitchen pressure
-the center of play.
+3. The plate holds three ingredients, shown above the chef. Carrying more food
+   slows movement slightly. Tilt uses energy, which recharges after Space is
+   released.
+
+4. Orders use five named recipes and one customer at a time. Customer types have
+   different patience times and bonuses. A shrinking bar shows the time left.
+   An expired order is replaced without taking a life.
+
+5. The next required ingredient appears regularly rather than leaving every
+   spawn completely random. The order also highlights what to catch next.
+
+6. Scoring includes catch points, combos, golden ingredients, and customer
+   bonuses. Catch points can only be earned once for each slot on an order.
+   Results show score, orders served, best combo, and a chef rank.
+
+7. Separate chopping and cooking screens were tried and then removed. The game
+   went back to one kitchen screen to keep the controls and goal easier to follow.
+
+8. Art was added for the kitchen, chef, food, and customers. The chef changes pose
+   after damage and completed orders. Artwork sources are in ART_CREDITS.txt.
+
+9. The original plan had no music. The current version has quiet background music
+   that gets softer during voice reactions. Music can be switched off with M.
+   The voices and music come from CC0 packs listed in AUDIO_CREDITS.txt.
+
+10. The project includes 15 automated gameplay tests and a saved build scene.
+    These check issues such as repeated damage, tilt running out, replacement
+    orders, scoring the same ingredient slot twice, pause, and restart.

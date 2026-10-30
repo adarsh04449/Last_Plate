@@ -14,7 +14,6 @@ public sealed class CustomerTicket
     public int rewardBonus;
 }
 
-/// <summary>Owns the single active customer ticket and validates the plate against it.</summary>
 public class OrderManager : MonoBehaviour
 {
     public int Progress { get; private set; }
@@ -33,6 +32,16 @@ public class OrderManager : MonoBehaviour
     };
     private readonly string[] recipeNames = { "Garden Stack", "Mushroom Melt", "Fresh Skillet", "Double Cheese", "Tomato Tower" };
     private int lastRecipe = -1;
+    private UIManager ui;
+    private AudioManager audioManager;
+    private PlateInventory inventory;
+
+    private void Start()
+    {
+        ui = GetComponent<UIManager>();
+        audioManager = GetComponent<AudioManager>();
+        inventory = FindAnyObjectByType<PlateInventory>();
+    }
 
     private void Update()
     {
@@ -46,7 +55,7 @@ public class OrderManager : MonoBehaviour
         CurrentCustomer = BuildCustomer();
         System.Array.Clear(rewardedSlots, 0, rewardedSlots.Length);
         Progress = 0;
-        FindAnyObjectByType<UIManager>()?.Refresh();
+        ui.Refresh();
     }
 
     public bool ProcessPlateCatch(IReadOnlyList<IngredientType> plate, bool golden)
@@ -59,21 +68,22 @@ public class OrderManager : MonoBehaviour
             bool newlyRewarded = !rewardedSlots[slot];
             if (newlyRewarded)
             {
+                // Discarding a correct item should not let the same slot pay out again.
                 rewardedSlots[slot] = true;
                 GameManager.Instance.RegisterCorrectIngredient(golden);
             }
-            else FindAnyObjectByType<UIManager>().ShowCatchFeedback("GOOD CATCH", false);
-            FindAnyObjectByType<AudioManager>().PlayCatch(golden && newlyRewarded);
+            else ui.ShowCatchFeedback("GOOD CATCH", false);
+            audioManager.PlayCatch(golden && newlyRewarded);
         }
         else
         {
             GameManager.Instance.BreakCombo();
-            FindAnyObjectByType<UIManager>().ShowCatchFeedback("WRONG — TILT TO DISCARD", false);
-            FindAnyObjectByType<AudioManager>().PlayWrongIngredient();
+            ui.ShowCatchFeedback("WRONG — TILT TO DISCARD", false);
+            audioManager.PlayWrongIngredient();
         }
 
         if (TryCompleteOrder(plate.Count)) return true;
-        FindAnyObjectByType<UIManager>().Refresh();
+        ui.Refresh();
         return false;
     }
 
@@ -82,13 +92,17 @@ public class OrderManager : MonoBehaviour
         Progress = 0;
         int count = Mathf.Min(plate.Count, CurrentOrder.Length);
         while (Progress < count && plate[Progress] == CurrentOrder[Progress]) Progress++;
-        FindAnyObjectByType<UIManager>()?.Refresh();
+        ui.Refresh();
     }
 
     private CustomerTicket BuildCustomer()
     {
         int recipe;
-        do recipe = Random.Range(0, recipes.Length); while (recipe == lastRecipe && recipes.Length > 1);
+        do
+        {
+            recipe = Random.Range(0, recipes.Length);
+        }
+        while (recipe == lastRecipe && recipes.Length > 1);
         lastRecipe = recipe;
         DifficultyLevel difficulty = GameManager.Instance == null ? DifficultyLevel.Preparation : GameManager.Instance.Difficulty;
         float roll = Random.value;
@@ -117,11 +131,8 @@ public class OrderManager : MonoBehaviour
     {
         CreateNewOrder();
         // Burnt food is the only life-losing hazard for now; patience only replaces the order.
-        FindAnyObjectByType<UIManager>()?.ShowCatchFeedback("CUSTOMER LEFT — NEW ORDER", false);
-        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
-        if (inventory == null) return;
+        ui.ShowCatchFeedback("CUSTOMER LEFT — NEW ORDER", false);
         SyncPlate(inventory.CurrentTypes);
         if (TryCompleteOrder(inventory.Count)) inventory.Clear();
     }
-
 }

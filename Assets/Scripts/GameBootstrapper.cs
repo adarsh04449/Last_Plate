@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Builds the entire playable scene so no Inspector setup is required.</summary>
+// The saved scene has the camera. The chef, ingredients, and UI are set up here.
 public class GameBootstrapper : MonoBehaviour
 {
     private static readonly Color Navy = new Color(0.035f, 0.075f, 0.12f);
@@ -49,16 +49,24 @@ public class GameBootstrapper : MonoBehaviour
 
         Sprite flatPlate = MakeRoundedPlate(false);
         Sprite tiltedPlate = MakeRoundedPlate(true);
-        // Compensate for the chef sprite scale so the gameplay catch area stays unchanged.
+        // The plate's scale includes its parent chef's scale.
         GameObject plate = CreateSpriteObject("CatchPlate", flatPlate, new Vector3(0.45f, -2.55f, -0.1f), new Vector3(1.54f, 0.86f, 1f), chef.transform, 4);
-        BoxCollider2D plateCollider = plate.AddComponent<BoxCollider2D>(); plateCollider.isTrigger = true; plateCollider.size = new Vector2(1.8f, 1.3f);
-        Rigidbody2D plateBody = plate.AddComponent<Rigidbody2D>(); plateBody.bodyType = RigidbodyType2D.Kinematic; plateBody.gravityScale = 0f;
-        PlateController plateController = plate.AddComponent<PlateController>(); plateController.flatSprite = flatPlate; plateController.tiltedSprite = tiltedPlate;
+        BoxCollider2D plateCollider = plate.AddComponent<BoxCollider2D>();
+        plateCollider.isTrigger = true;
+        plateCollider.size = new Vector2(1.8f, 1.3f);
+        Rigidbody2D plateBody = plate.AddComponent<Rigidbody2D>();
+        plateBody.bodyType = RigidbodyType2D.Kinematic;
+        plateBody.gravityScale = 0f;
+        PlateController plateController = plate.AddComponent<PlateController>();
+        plateController.flatSprite = flatPlate;
+        plateController.tiltedSprite = tiltedPlate;
         plate.AddComponent<PlateInventory>();
 
         GameObject container = new GameObject("IngredientContainer");
         SpawnManager spawner = manager.AddComponent<SpawnManager>();
-        spawner.ingredientContainer = container.transform; spawner.ingredientSprites = foods; spawner.burntSprite = burnt;
+        spawner.ingredientContainer = container.transform;
+        spawner.ingredientSprites = foods;
+        spawner.burntSprite = burnt;
         CreateUI(manager, foods);
     }
 
@@ -98,9 +106,14 @@ public class GameBootstrapper : MonoBehaviour
 
     private void CreateUI(GameObject parent, Sprite[] foodSprites)
     {
-        GameObject canvasObject = new GameObject("Canvas"); canvasObject.transform.SetParent(parent.transform);
-        Canvas canvas = canvasObject.AddComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1280, 720); scaler.matchWidthOrHeight = 0.5f;
+        GameObject canvasObject = new GameObject("Canvas");
+        canvasObject.transform.SetParent(parent.transform);
+        Canvas canvas = canvasObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1280, 720);
+        scaler.matchWidthOrHeight = 0.5f;
         canvasObject.AddComponent<GraphicRaycaster>();
 
         GameObject hud = MakeUIObject("HUD", canvasObject.transform);
@@ -136,62 +149,121 @@ public class GameBootstrapper : MonoBehaviour
         Text tiltPrompt = MakeText(hud.transform, "HOLD SPACE TO TILT", new Vector2(-455f, -263f), new Vector2(320f, 34f), 14, Color.white, TextAnchor.MiddleCenter);
 
         GameObject titlePanel = MakeFullPanel("TitlePanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.88f));
-        GameObject pausePanel = MakeFullPanel("PausePanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.88f)); pausePanel.SetActive(false);
-        GameObject resultsPanel = MakeFullPanel("ResultsPanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.9f)); resultsPanel.SetActive(false);
-        Image damageFlash = MakeFullPanel("DamageFlash", canvasObject.transform, Color.clear).GetComponent<Image>(); damageFlash.raycastTarget = false;
-        Image successFlash = MakeFullPanel("SuccessFlash", canvasObject.transform, Color.clear).GetComponent<Image>(); successFlash.raycastTarget = false;
+        GameObject pausePanel = MakeFullPanel("PausePanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.88f));
+        pausePanel.SetActive(false);
+        GameObject resultsPanel = MakeFullPanel("ResultsPanel", canvasObject.transform, new Color(0.01f, 0.025f, 0.045f, 0.9f));
+        resultsPanel.SetActive(false);
+        Image damageFlash = MakeFullPanel("DamageFlash", canvasObject.transform, Color.clear).GetComponent<Image>();
+        damageFlash.raycastTarget = false;
+        Image successFlash = MakeFullPanel("SuccessFlash", canvasObject.transform, Color.clear).GetComponent<Image>();
+        successFlash.raycastTarget = false;
         Text message = MakeText(canvasObject.transform, "", Vector2.zero, new Vector2(1000f, 610f), 42, Color.white, TextAnchor.MiddleCenter);
 
         UIManager ui = parent.AddComponent<UIManager>();
-        ui.timerText = timer; ui.scoreText = score; ui.livesText = lives; ui.orderText = order; ui.comboText = combo; ui.levelText = level; ui.messageText = message; ui.tiltPromptText = tiltPrompt; ui.tiltFill = tiltFill;
-        ui.orderIcons = orderIcons; ui.orderFrames = orderFrames; ui.ingredientSprites = foodSprites;
-        ui.damageFlash = damageFlash; ui.successFlash = successFlash;
-        ui.customerText = customerText; ui.patienceFill = patienceFill; ui.customerCardImage = card.GetComponent<Image>();
-        ui.customerPortrait = customerPortrait; ui.customerSprites = customerSprites;
-        ui.titlePanel = titlePanel; ui.pausePanel = pausePanel; ui.resultsPanel = resultsPanel; ui.hud = hud;
+        ui.timerText = timer;
+        ui.scoreText = score;
+        ui.livesText = lives;
+        ui.orderText = order;
+        ui.comboText = combo;
+        ui.levelText = level;
+        ui.messageText = message;
+        ui.tiltPromptText = tiltPrompt;
+        ui.tiltFill = tiltFill;
+        ui.orderIcons = orderIcons;
+        ui.orderFrames = orderFrames;
+        ui.ingredientSprites = foodSprites;
+        ui.damageFlash = damageFlash;
+        ui.successFlash = successFlash;
+        ui.customerText = customerText;
+        ui.patienceFill = patienceFill;
+        ui.customerCardImage = card.GetComponent<Image>();
+        ui.customerPortrait = customerPortrait;
+        ui.customerSprites = customerSprites;
+        ui.titlePanel = titlePanel;
+        ui.pausePanel = pausePanel;
+        ui.resultsPanel = resultsPanel;
+        ui.hud = hud;
     }
 
     private static GameObject MakeUIObject(string name, Transform parent)
     {
-        GameObject obj = new GameObject(name, typeof(RectTransform)); obj.transform.SetParent(parent, false);
-        RectTransform rect = obj.GetComponent<RectTransform>(); rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero; return obj;
+        GameObject obj = new GameObject(name, typeof(RectTransform));
+        obj.transform.SetParent(parent, false);
+        RectTransform rect = obj.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        return obj;
     }
 
     private static GameObject MakeFullPanel(string name, Transform parent, Color color)
     {
-        GameObject panel = MakeUIObject(name, parent); panel.AddComponent<Image>().color = color; return panel;
+        GameObject panel = MakeUIObject(name, parent);
+        panel.AddComponent<Image>().color = color;
+        return panel;
     }
 
     private static GameObject MakePanel(string name, Transform parent, Color color, Vector2 position, Vector2 size)
     {
-        GameObject panel = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)); panel.transform.SetParent(parent, false);
-        RectTransform rect = panel.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position; panel.GetComponent<Image>().color = color; return panel;
+        GameObject panel = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        panel.transform.SetParent(parent, false);
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
+        panel.GetComponent<Image>().color = color;
+        return panel;
     }
 
     private static Text MakeText(Transform parent, string value, Vector2 position, Vector2 size, int fontSize, Color color, TextAnchor alignment)
     {
-        GameObject textObject = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text)); textObject.transform.SetParent(parent, false);
-        Text text = textObject.GetComponent<Text>(); text.text = value; text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); text.fontSize = fontSize; text.fontStyle = FontStyle.Bold; text.color = color; text.alignment = alignment;
-        RectTransform rect = textObject.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position; return text;
+        GameObject textObject = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+        textObject.transform.SetParent(parent, false);
+        Text text = textObject.GetComponent<Text>();
+        text.text = value;
+        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.fontSize = fontSize;
+        text.fontStyle = FontStyle.Bold;
+        text.color = color;
+        text.alignment = alignment;
+        RectTransform rect = textObject.GetComponent<RectTransform>();
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
+        return text;
     }
 
     private static Image MakeSpriteImage(string name, Transform parent, Sprite sprite, Vector2 position, Vector2 size)
     {
-        GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)); imageObject.transform.SetParent(parent, false);
-        RectTransform rect = imageObject.GetComponent<RectTransform>(); rect.sizeDelta = size; rect.anchoredPosition = position;
-        Image image = imageObject.GetComponent<Image>(); image.sprite = sprite; image.preserveAspect = true; image.raycastTarget = false; return image;
+        GameObject imageObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        imageObject.transform.SetParent(parent, false);
+        RectTransform rect = imageObject.GetComponent<RectTransform>();
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
+        Image image = imageObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        return image;
     }
 
     private static GameObject CreateSpriteObject(string name, Sprite sprite, Vector3 position, Vector3 scale, Transform parent, int sortingOrder)
     {
-        GameObject obj = new GameObject(name); if (parent != null) obj.transform.SetParent(parent);
-        obj.transform.position = position; obj.transform.localScale = scale;
-        SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>(); renderer.sprite = sprite; renderer.sortingOrder = sortingOrder; return obj;
+        GameObject obj = new GameObject(name);
+        if (parent != null) obj.transform.SetParent(parent);
+        obj.transform.position = position;
+        obj.transform.localScale = scale;
+        SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+        renderer.sprite = sprite;
+        renderer.sortingOrder = sortingOrder;
+        return obj;
     }
 
     private static Sprite MakeSolidSprite(Color color)
     {
-        Texture2D texture = new Texture2D(16, 16); Color[] pixels = new Color[256]; for (int i = 0; i < pixels.Length; i++) pixels[i] = color; texture.SetPixels(pixels); texture.Apply();
+        Texture2D texture = new Texture2D(16, 16);
+        Color[] pixels = new Color[256];
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = color;
+        texture.SetPixels(pixels);
+        texture.Apply();
         return Sprite.Create(texture, new Rect(0, 0, 16, 16), new Vector2(0.5f, 0.5f), 16f);
     }
 
@@ -199,20 +271,25 @@ public class GameBootstrapper : MonoBehaviour
     {
         const int width = 512;
         const int height = 128;
-        Texture2D texture = new Texture2D(width, height); Color[] pixels = new Color[width * height];
-        for (int y = 0; y < height; y++) for (int x = 0; x < width; x++)
+        Texture2D texture = new Texture2D(width, height);
+        Color[] pixels = new Color[width * height];
+        Color outer = tilted ? new Color(0.3f, 0.78f, 0.92f) : new Color(0.82f, 0.86f, 0.9f);
+        Color inner = tilted ? new Color(0.76f, 0.95f, 1f) : new Color(0.98f, 0.97f, 0.9f);
+        for (int y = 0; y < height; y++)
         {
-            float nx = (x - (width - 1) * 0.5f) / ((width - 1) * 0.5f);
-            float ny = (y - (height - 1) * 0.5f) / ((height - 1) * 0.5f);
-            float radius = nx * nx + ny * ny;
-            Color outer = tilted ? new Color(0.3f, 0.78f, 0.92f) : new Color(0.82f, 0.86f, 0.9f);
-            Color inner = tilted ? new Color(0.76f, 0.95f, 1f) : new Color(0.98f, 0.97f, 0.9f);
-            pixels[y * width + x] = radius > 1f ? Color.clear : radius > 0.68f ? outer : inner;
+            for (int x = 0; x < width; x++)
+            {
+                float nx = (x - (width - 1) * 0.5f) / ((width - 1) * 0.5f);
+                float ny = (y - (height - 1) * 0.5f) / ((height - 1) * 0.5f);
+                float radius = nx * nx + ny * ny;
+                pixels[y * width + x] = radius > 1f ? Color.clear : radius > 0.68f ? outer : inner;
+            }
         }
         texture.name = tilted ? "High Resolution Tilted Plate" : "High Resolution Flat Plate";
         texture.filterMode = FilterMode.Bilinear;
         texture.wrapMode = TextureWrapMode.Clamp;
-        texture.SetPixels(pixels); texture.Apply();
+        texture.SetPixels(pixels);
+        texture.Apply();
         return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 256f);
     }
 }

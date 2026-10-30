@@ -1,6 +1,5 @@
 using UnityEngine;
 
-/// <summary>Temporarily swaps the chef pose when important gameplay events happen.</summary>
 public class ChefReactionController : MonoBehaviour
 {
     public Sprite readySprite;

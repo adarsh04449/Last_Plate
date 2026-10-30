@@ -8,7 +8,10 @@ public class FallingIngredient : MonoBehaviour
     private bool resolved;
     private float wobbleOffset;
 
-    private void Start() { wobbleOffset = Random.Range(0f, 10f); }
+    private void Start()
+    {
+        wobbleOffset = Random.Range(0f, 10f);
+    }
 
     private void Update()
     {
@@ -26,6 +29,7 @@ public class FallingIngredient : MonoBehaviour
     public void CaughtBy(PlateController plate)
     {
         if (resolved) return;
+        // Several overlaps in one physics step must still count as a single catch.
         resolved = true;
         plate.GetComponent<PlateInventory>().TryCatch(this);
         Destroy(gameObject);

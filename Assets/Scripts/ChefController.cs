@@ -5,6 +5,12 @@ public class ChefController : MonoBehaviour
     public float moveSpeed = 8f;
     public float horizontalLimit = 8.3f;
     private float velocity;
+    private PlateInventory inventory;
+
+    private void Start()
+    {
+        inventory = GetComponentInChildren<PlateInventory>();
+    }
 
     private void Update()
     {
@@ -12,7 +18,6 @@ public class ChefController : MonoBehaviour
         float input = 0f;
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) input = -1f;
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) input = 1f;
-        PlateInventory inventory = FindAnyObjectByType<PlateInventory>();
         float weightMultiplier = inventory == null ? 1f : Mathf.Lerp(1f, 0.72f, inventory.LoadRatio);
         velocity = Mathf.MoveTowards(velocity, input * moveSpeed * weightMultiplier, 28f * Time.deltaTime);
         Vector3 position = transform.position;

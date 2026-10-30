@@ -191,6 +191,21 @@ public class GameplayTests
     }
 
     [Test]
+    public void NewOrderUpdatesTicketAndPatienceMeter()
+    {
+        string oldRecipe = orders.CurrentCustomer.recipeName;
+        orders.CreateNewOrder();
+        CustomerTicket ticket = orders.CurrentCustomer;
+        Assert.That(ticket.recipeName, Is.Not.EqualTo(oldRecipe));
+        StringAssert.Contains(ticket.recipeName.ToUpper(), ui.customerText.text);
+        Assert.That(ui.customerPortrait.sprite, Is.SameAs(ui.customerSprites[(int)ticket.type]));
+
+        ticket.patience = ticket.maxPatience / 2f;
+        ui.Refresh();
+        Assert.That(ui.patienceFill.rectTransform.rect.width, Is.EqualTo(150f).Within(0.01f));
+    }
+
+    [Test]
     public void ThirdBurntCatchEndsRoundAndRestartResetsState()
     {
         Catch(orders.NextRequired);

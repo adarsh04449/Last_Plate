@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Stores and displays ingredients currently carried by the chef. Wrong food is recoverable:
-/// the player can tap/hold Space to tilt and discard the newest slot.
-/// </summary>
 public class PlateInventory : MonoBehaviour
 {
     private sealed class PlateItem
@@ -23,6 +19,9 @@ public class PlateInventory : MonoBehaviour
     private readonly List<PlateItem> items = new List<PlateItem>();
     private readonly List<IngredientType> typeView = new List<IngredientType>();
     private Transform displayRoot;
+    private OrderManager orders;
+    private UIManager ui;
+    private AudioManager audioManager;
 
     private void Awake()
     {
@@ -31,19 +30,26 @@ public class PlateInventory : MonoBehaviour
         displayRoot.localPosition = transform.localPosition + new Vector3(0f, 0.42f, -0.2f);
     }
 
+    private void Start()
+    {
+        orders = FindAnyObjectByType<OrderManager>();
+        ui = FindAnyObjectByType<UIManager>();
+        audioManager = FindAnyObjectByType<AudioManager>();
+    }
+
     public void TryCatch(FallingIngredient ingredient)
     {
         if (ingredient.ingredientType == IngredientType.BurntFood)
         {
             GameManager.Instance.LoseLife("BURNT FOOD!");
-            FindAnyObjectByType<AudioManager>().PlayLifeLost();
+            audioManager.PlayLifeLost();
             return;
         }
 
         if (items.Count >= maxSlots)
         {
-            FindAnyObjectByType<UIManager>().ShowCatchFeedback("PLATE FULL — TILT!", false);
-            FindAnyObjectByType<AudioManager>().PlayWrongIngredient();
+            ui.ShowCatchFeedback("PLATE FULL — TILT!", false);
+            audioManager.PlayWrongIngredient();
             return;
         }
 
@@ -58,7 +64,7 @@ public class PlateInventory : MonoBehaviour
         items.Add(item);
         RefreshVisualPositions();
 
-        bool orderCompleted = FindAnyObjectByType<OrderManager>().ProcessPlateCatch(GetTypes(), item.golden);
+        bool orderCompleted = orders.ProcessPlateCatch(GetTypes(), item.golden);
         if (orderCompleted) Clear();
     }
 
@@ -69,8 +75,8 @@ public class PlateInventory : MonoBehaviour
         Destroy(items[last].visual);
         items.RemoveAt(last);
         RefreshVisualPositions();
-        FindAnyObjectByType<OrderManager>().SyncPlate(GetTypes());
-        FindAnyObjectByType<UIManager>().ShowCatchFeedback("DISCARDED", false);
+        orders.SyncPlate(GetTypes());
+        ui.ShowCatchFeedback("DISCARDED", false);
     }
 
     public void Clear()
@@ -79,7 +85,7 @@ public class PlateInventory : MonoBehaviour
             if (item.visual != null) Destroy(item.visual);
         items.Clear();
         typeView.Clear();
-        FindAnyObjectByType<OrderManager>()?.SyncPlate(typeView);
+        orders.SyncPlate(typeView);
     }
 
     private GameObject CreateVisual(PlateItem item)

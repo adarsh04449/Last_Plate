@@ -1,6 +1,5 @@
 using UnityEngine;
 
-/// <summary>Mixes gentle effects, conversational reactions, and a quiet background loop.</summary>
 public class AudioManager : MonoBehaviour
 {
     [Header("Mix")]
@@ -21,8 +20,12 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        source = gameObject.AddComponent<AudioSource>(); source.playOnAwake = false; source.volume = effectsVolume;
-        voiceSource = gameObject.AddComponent<AudioSource>(); voiceSource.playOnAwake = false; voiceSource.volume = voiceVolume;
+        source = gameObject.AddComponent<AudioSource>();
+        source.playOnAwake = false;
+        source.volume = effectsVolume;
+        voiceSource = gameObject.AddComponent<AudioSource>();
+        voiceSource.playOnAwake = false;
+        voiceSource.volume = voiceVolume;
         voiceSource.spatialBlend = 0f;
         voiceSource.pitch = 1f;
         backgroundSource = gameObject.AddComponent<AudioSource>();
@@ -55,7 +58,7 @@ public class AudioManager : MonoBehaviour
         }
         if (playbackPaused) return;
 
-        // Give the actor room in the mix while preserving audible gameplay feedback.
+        // Lower the effects and music while a voice line is playing.
         float targetVolume = effectsVolume * (voiceSource.isPlaying ? 0.45f : 1f);
         source.volume = Mathf.MoveTowards(source.volume, targetVolume, Time.unscaledDeltaTime * 3f);
         voiceSource.volume = voiceVolume;
@@ -64,7 +67,7 @@ public class AudioManager : MonoBehaviour
         float targetBackground = playing && MusicEnabled ? backgroundVolume * (voiceSource.isPlaying ? 0.35f : 1f) : 0f;
         if (targetBackground > 0f && !backgroundSource.isPlaying && backgroundSource.clip != null)
             backgroundSource.Play();
-        // Fade using real time so the round-end fade still works when gameplay is frozen.
+        // The fade must keep running after the round sets timeScale to zero.
         backgroundSource.volume = Mathf.MoveTowards(backgroundSource.volume, targetBackground, Time.unscaledDeltaTime * 0.15f);
         if (targetBackground == 0f && backgroundSource.volume == 0f && backgroundSource.isPlaying)
             backgroundSource.Stop();
@@ -75,12 +78,37 @@ public class AudioManager : MonoBehaviour
         source.PlayOneShot(golden ? goldenClip : catchClip);
         if (golden) PlayVoice(goldenVoices, ref goldenIndex, 6f, 0);
     }
-    public void PlayTilt() { source.PlayOneShot(tiltClip, 0.45f); }
-    public void PlayOrderComplete() { source.PlayOneShot(completeClip, 0.7f); PlayVoice(completeVoices, ref completeIndex, 4f, 1); }
-    public void PlayLifeLost() { source.PlayOneShot(lostClip, 0.65f); PlayVoice(damageVoices, ref damageIndex, 3f, 2); }
-    public void PlayWrongIngredient() { source.PlayOneShot(wrongClip, 0.8f); }
-    public void PlayLevelUp() { source.PlayOneShot(levelClip); }
-    public void PlayRoundFinished() { source.PlayOneShot(finishClip); }
+    public void PlayTilt()
+    {
+        source.PlayOneShot(tiltClip, 0.45f);
+    }
+
+    public void PlayOrderComplete()
+    {
+        source.PlayOneShot(completeClip, 0.7f);
+        PlayVoice(completeVoices, ref completeIndex, 4f, 1);
+    }
+
+    public void PlayLifeLost()
+    {
+        source.PlayOneShot(lostClip, 0.65f);
+        PlayVoice(damageVoices, ref damageIndex, 3f, 2);
+    }
+
+    public void PlayWrongIngredient()
+    {
+        source.PlayOneShot(wrongClip, 0.8f);
+    }
+
+    public void PlayLevelUp()
+    {
+        source.PlayOneShot(levelClip);
+    }
+
+    public void PlayRoundFinished()
+    {
+        source.PlayOneShot(finishClip);
+    }
 
     public void ResetPlayback()
     {
@@ -120,7 +148,7 @@ public class AudioManager : MonoBehaviour
 
     private void PlayVoice(AudioClip[] clips, ref int nextIndex, float cooldown, int priority)
     {
-        // Let a conversational reaction finish naturally; never cut one off mid-sentence.
+        // Finish the current line before starting another one.
         if (playbackPaused || voiceSource.isPlaying) return;
         if (Time.unscaledTime < nextVoiceTime && priority <= activeVoicePriority) return;
         AudioClip clip = clips[nextIndex];
@@ -140,11 +168,15 @@ public class AudioManager : MonoBehaviour
         int noteSamples = Mathf.CeilToInt(sampleRate * noteLength);
         float[] samples = new float[noteSamples * notes.Length];
         for (int note = 0; note < notes.Length; note++)
-        for (int i = 0; i < noteSamples; i++)
         {
-            float envelope = Mathf.Clamp01(i / (sampleRate * 0.012f)) * Mathf.Pow(1f - i / (float)noteSamples, 2f);
-            samples[note * noteSamples + i] = Mathf.Sin(2f * Mathf.PI * notes[note] * i / sampleRate) * envelope * 0.55f;
+            for (int i = 0; i < noteSamples; i++)
+            {
+                float envelope = Mathf.Clamp01(i / (sampleRate * 0.012f)) * Mathf.Pow(1f - i / (float)noteSamples, 2f);
+                samples[note * noteSamples + i] = Mathf.Sin(2f * Mathf.PI * notes[note] * i / sampleRate) * envelope * 0.55f;
+            }
         }
-        AudioClip clip = AudioClip.Create(name, samples.Length, 1, sampleRate, false); clip.SetData(samples, 0); return clip;
+        AudioClip clip = AudioClip.Create(name, samples.Length, 1, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
     }
 }
