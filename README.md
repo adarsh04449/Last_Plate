@@ -51,15 +51,8 @@ The Game scene is already in the build list.
 - `Assets/Resources/`: art and audio.
 - `Assets/Tests/PlayMode/`: gameplay tests.
 - `DESIGN_CHANGES.txt`: changes from the original one-page design.
-- `PLAN.md`: remaining work.
 
-## Credits
-
-The kitchen background, chef poses, customer portraits, and ingredient images
-were generated for this project using OpenAI image generation. They are in
-`Assets/Resources/Art`. The older `character_ingredient_sheet.png` is kept as a
-fallback. The plate and plain UI panels are drawn in code; no purchased art packs
-are used.
+## Audio credits
 
 Voice reactions are by [cicifyre](https://cicifyre.itch.io/), from the
 [Free Voice Clips Pack - Bright Female](https://opengameart.org/content/voice-clip-packs-for-visual-novels-and-rpgs).
