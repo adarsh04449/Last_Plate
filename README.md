@@ -9,8 +9,6 @@ ingredients shown on the order, and use the plate tilt to get rid of mistakes.
 2. Open `Assets/Scenes/Game.unity`.
 3. Press Play, then Enter to start.
 
-The scene contains the camera and a setup script. The setup script creates the
-chef, kitchen, and UI when the game starts.
 
 ## Controls
 
@@ -42,4 +40,3 @@ The round ends when the timer reaches zero or all three lives are lost.
 - `Assets/Scripts/`: game code.
 - `Assets/Resources/`: art and audio.
 - `Assets/Tests/PlayMode/`: gameplay tests.
-- `DESIGN_CHANGES.txt`: changes from the original one-page design.
